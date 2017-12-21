@@ -42,6 +42,8 @@ find_package(Qt5 COMPONENTS
 set(MCMODCRAFTER_HEADERS
     src/stdafx.h
     src/ConfigBase.h
+    src/RuntimeConfig.h
+    src/FileDownloader.h
     src/WindowMCModCrafter.h
 
     # third party
@@ -52,6 +54,8 @@ set(MCMODCRAFTER_SOURCES
     src/main.cpp
     src/stdafx.cpp
     src/ConfigBase.cpp
+    src/RuntimeConfig.cpp
+    src/FileDownloader.cpp
     src/WindowMCModCrafter.cpp
 
     # third party

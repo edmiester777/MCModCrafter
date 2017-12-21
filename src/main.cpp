@@ -21,6 +21,7 @@
 #include "stdafx.h"
 #include "WindowMCModCrafter.h"
 #include <QtWidgets/QApplication>
+#include "RuntimeConfig.h"
 
 #define MB10 1024*1024*10
 

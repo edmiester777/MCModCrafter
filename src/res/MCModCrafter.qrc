@@ -1,4 +1,5 @@
 <RCC>
-    <qresource prefix="MCModCrafter">
+    <qresource prefix="/MCModCrafter">
+        <file>runtimeconfig.json</file>
     </qresource>
 </RCC>

@@ -20,6 +20,7 @@
 
 #ifndef __CONFIGBASE_H__
 #define __CONFIGBASE_H__
+
 #include "stdafx.h"
 
 class ConfigBase;
@@ -29,10 +30,12 @@ class ConfigBase;
  */
 typedef QMap<QString, QJsonValue*> JsonValueMemberMap;
 
+typedef void(*JsonSetter)(void*, QJsonValue*);
+
 /**
  * Definition for a list of setters for properties.
  */
-typedef QMap<QString, void(ConfigBase::*)(QJsonValue*)> JsonValueSetterMap;
+typedef QMap<QString, void(*)(void*, QJsonValue*)> JsonValueSetterMap;
 
 /**
  * Macro to define a config property in the config standard.
@@ -41,23 +44,26 @@ typedef QMap<QString, void(ConfigBase::*)(QJsonValue*)> JsonValueSetterMap;
  * @param name Name (non-string) for object.
  * @param getterFunc Function used on QVariant used to get correct value.
  */
-#define CONFIG_PROPERTY(type, name, getterFunc) \
+#define CONFIG_PROPERTY(cls, type, name, getterFunc) \
+    friend void Set##name##Raw(void*, QJsonValue*); \
     private: QJsonValue* m_##name = AddMember(#name, &Set##name##Raw); \
-    private: void Set##name##Raw(QJsonValue* value) \
+    private: static void Set##name##Raw(void* p, QJsonValue* value) \
     { \
-        if(m_##name != nullptr) \
+        cls* obj = static_cast<cls*>(p); \
+        if(obj->m_##name != nullptr) \
         { \
-            delete m_##name; \
-            m_values[#name] = value; \
+            delete obj->m_##name; \
         } \
+        obj->m_values[#name] = value; \
+        obj->m_##name = value;\
     } \
     public: void Set##name(type value) { m_##name->fromVariant(value); } \
-    public: type Get##name() { return m_##name->##getterFunc(); }
+    public: type Get##name() { return m_##name->##getterFunc##(); }
 
-#define CONFIG_STRING_PROPERTY(name) CONFIG_PROPERTY(QString, ##name, toString)
-#define CONFIG_BOOL_PROPERTY(name) CONFIG_PROPERTY(bool, ##name, toBool)
-#define CONFIG_INT_PROPERTY(name) CONFIG_PROPERTY(int, ##name, toInt)
-#define CONFIG_DOUBLE_PROPERTY(name) CONFIG_PROPERTY(double, ##name, toDouble)
+#define CONFIG_STRING_PROPERTY(cls, name) CONFIG_PROPERTY(##cls, QString, ##name, toString)
+#define CONFIG_BOOL_PROPERTY(cls, name) CONFIG_PROPERTY(##cls, bool, ##name, toBool)
+#define CONFIG_INT_PROPERTY(cls, name) CONFIG_PROPERTY(##cls, int, ##name, toInt)
+#define CONFIG_DOUBLE_PROPERTY(cls, name) CONFIG_PROPERTY(##cls, double, ##name, toDouble)
 
 /**
  * @brief Config base class.
@@ -87,12 +93,12 @@ public:
     bool Load();
 
 protected:
-    QJsonValue* AddMember(QString memberName, void(ConfigBase::*setter)(QJsonValue*));
+    QJsonValue* AddMember(QString memberName, JsonSetter setter);
+    JsonValueMemberMap m_values;
+    JsonValueSetterMap m_setters;
 
 private:
     QString m_path;
-    JsonValueMemberMap m_values;
-    JsonValueSetterMap m_setters;
 };
 
 #endif //!__CONFIGBASE_H__

@@ -103,11 +103,11 @@ bool ConfigBase::Load()
                     QString key = iter.key();
                     if(obj.contains(key))
                     {
-                        (this->*(m_setters[key]))(new QJsonValue(obj[key]));
+                        (*m_setters[key])(this, new QJsonValue(obj[key]));
                     }
                 }
 
-                L_INFO(QString("Loaded %s!").arg(m_path));
+                L_INFO(QString("Loaded %1!").arg(m_path));
                 return true;
             }
         }
@@ -119,7 +119,7 @@ bool ConfigBase::Load()
     return false;
 }
 
-QJsonValue* ConfigBase::AddMember(QString memberName, void(ConfigBase::*setter)(QJsonValue*))
+QJsonValue* ConfigBase::AddMember(QString memberName, JsonSetter setter)
 {
     QJsonValue* val = new QJsonValue;
     m_values[memberName] = val;
