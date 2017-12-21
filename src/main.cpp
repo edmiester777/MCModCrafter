@@ -21,10 +21,38 @@
 #include "stdafx.h"
 #include "WindowMCModCrafter.h"
 #include <QtWidgets/QApplication>
-#include <QtXml>
+
+#define MB10 1024*1024*10
 
 int main(int argc, char *argv[])
 {
+    // configuring logger
+    simpleqtlogger::ENABLE_LOG_SINK_FILE = true;
+    simpleqtlogger::ENABLE_LOG_SINK_CONSOLE = true;
+    simpleqtlogger::ENABLE_LOG_SINK_QDEBUG = false;
+    simpleqtlogger::ENABLE_LOG_SINK_SIGNAL = true;
+    // set log-features
+    simpleqtlogger::ENABLE_FUNCTION_STACK_TRACE = true;
+    simpleqtlogger::ENABLE_CONSOLE_COLOR = true;
+    // set log-levels (global; all enabled)
+    simpleqtlogger::ENABLE_LOG_LEVELS.logLevel_DEBUG = true;
+    simpleqtlogger::ENABLE_LOG_LEVELS.logLevel_FUNCTION = true;
+    // set log-levels (specific)
+    simpleqtlogger::EnableLogLevels enableLogLevels_file = simpleqtlogger::ENABLE_LOG_LEVELS;
+    simpleqtlogger::EnableLogLevels enableLogLevels_console = simpleqtlogger::ENABLE_LOG_LEVELS;
+    simpleqtlogger::EnableLogLevels enableLogLevels_qDebug = simpleqtlogger::ENABLE_LOG_LEVELS;
+    simpleqtlogger::EnableLogLevels enableLogLevels_signal = simpleqtlogger::ENABLE_LOG_LEVELS;
+    enableLogLevels_console.logLevel_FUNCTION = false;
+    simpleqtlogger::EnableLogLevels enableLogLevels_fileWarn = simpleqtlogger::ENABLE_LOG_LEVELS;
+    enableLogLevels_fileWarn.logLevel_NOTE = false;
+    enableLogLevels_fileWarn.logLevel_INFO = false;
+    enableLogLevels_fileWarn.logLevel_DEBUG = false;
+    enableLogLevels_fileWarn.logLevel_FUNCTION = false;
+
+    // constructing logger
+    SimpleQtLogger::createInstance(nullptr)->setLogFileName("logs/MCModCrafter.log", MB10, 50);
+
+    // running application
     QApplication a(argc, argv);
     MCModCrafter w;
     w.show();

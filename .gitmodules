@@ -1,0 +1,3 @@
+[submodule "third_party/SimpleQtLogger"]
+	path = third_party/SimpleQtLogger
+	url = https://github.com/Mokolea/SimpleQtLogger.git

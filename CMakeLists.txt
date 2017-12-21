@@ -35,20 +35,27 @@ find_package(Qt5 COMPONENTS
     Core
     Widgets
     Network
-    Xml
     REQUIRED
 )
 
 # Source definitions
 set(MCMODCRAFTER_HEADERS
     src/stdafx.h
+    src/ConfigBase.h
     src/WindowMCModCrafter.h
+
+    # third party
+    third_party/SimpleQtLogger/simpleQtLogger.h
 )
 
 set(MCMODCRAFTER_SOURCES
     src/main.cpp
     src/stdafx.cpp
+    src/ConfigBase.cpp
     src/WindowMCModCrafter.cpp
+
+    # third party
+    third_party/SimpleQtLogger/simpleQtLogger.cpp
 )
 
 set(MCMODCRAFTER_FORMS
@@ -73,10 +80,11 @@ target_link_libraries(frontend
     Qt5::Core
     Qt5::Widgets
     Qt5::Network
-    Qt5::Xml
 )
 
+include_directories(third_party/SimpleQtLogger)
 target_include_directories(frontend PUBLIC "${CMAKE_SOURCE_DIR}/src")
+
 
 # Enabling install during build.
 if(WIN32)

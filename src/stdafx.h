@@ -18,4 +18,9 @@
 * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 *************************************************************************/
 
+#include <QtCore>
 #include <QtWidgets>
+#include <QJsonDocument>
+#include "simpleQtLogger.h"
+
+using namespace simpleqtlogger;
