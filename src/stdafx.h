@@ -21,6 +21,8 @@
 #include <QtCore>
 #include <QtWidgets>
 #include <QJsonDocument>
+#include <QDir>
+#include <QFile>
 #include "simpleQtLogger.h"
 
 using namespace simpleqtlogger;

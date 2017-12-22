@@ -1,3 +1,6 @@
 {
+    "ProjectsDirectory": "projects/",
+    "DownloadsDirectory": "downloads/",
+    "ProjectConfigName": "mcmc.modproj",
     "MinecraftForgeUrl": "http://files.minecraftforge.net/maven/net/minecraftforge/forge/1.12.2-14.23.1.2578/forge-1.12.2-14.23.1.2578-mdk.zip"
 }

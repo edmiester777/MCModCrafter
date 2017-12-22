@@ -43,8 +43,10 @@ set(MCMODCRAFTER_HEADERS
     src/stdafx.h
     src/ConfigBase.h
     src/RuntimeConfig.h
+    src/ProjectConfig.h
     src/FileDownloader.h
     src/WindowMCModCrafter.h
+    src/DialogCreateProject.h
 
     # third party
     third_party/SimpleQtLogger/simpleQtLogger.h
@@ -55,8 +57,10 @@ set(MCMODCRAFTER_SOURCES
     src/stdafx.cpp
     src/ConfigBase.cpp
     src/RuntimeConfig.cpp
+    src/ProjectConfig.cpp
     src/FileDownloader.cpp
     src/WindowMCModCrafter.cpp
+    src/DialogCreateProject.cpp
 
     # third party
     third_party/SimpleQtLogger/simpleQtLogger.cpp
@@ -64,6 +68,7 @@ set(MCMODCRAFTER_SOURCES
 
 set(MCMODCRAFTER_FORMS
     src/forms/WindowMCModCrafter.ui
+    src/forms/DialogCreateProject.ui
 )
 
 set(MCMODCRAFTER_RESOURCES
@@ -102,5 +107,5 @@ endif(WIN32)
 
 # Setting MSVC flags
 if(MSVC)
-    set(CMAKE_CXX_FLAGS "/D_WIN32_WINNT=0x0600 /MP")
+    set(CMAKE_CXX_FLAGS "/D_WIN32_WINNT=0x0600 /MP /EHsc")
 endif()

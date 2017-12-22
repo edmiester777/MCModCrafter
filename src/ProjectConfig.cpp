@@ -19,10 +19,10 @@
 *************************************************************************/
 
 #include <stdafx.h>
-#include "WindowMCModCrafter.h"
+#include "ProjectConfig.h"
 
-MCModCrafter::MCModCrafter(QWidget *parent)
-    : QMainWindow(parent)
+ProjectConfig::ProjectConfig(QString path)
+    : ConfigBase(path)
 {
-    m_ui.setupUi(this);
+
 }

@@ -19,10 +19,10 @@
 *************************************************************************/
 
 #include <stdafx.h>
-#include "WindowMCModCrafter.h"
+#include "DialogCreateProject.h"
 
-MCModCrafter::MCModCrafter(QWidget *parent)
-    : QMainWindow(parent)
+DialogCreateProject::DialogCreateProject(QWidget *parent)
+    : QDialog(parent)
 {
     m_ui.setupUi(this);
 }

@@ -32,8 +32,9 @@ public:
     RuntimeConfig();
 
 private:
+    CONFIG_STRING_PROPERTY(RuntimeConfig, ProjectsDirectory);
+    CONFIG_STRING_PROPERTY(RuntimeConfig, DownloadsDirectory);
     CONFIG_STRING_PROPERTY(RuntimeConfig, MinecraftForgeUrl);
-    CONFIG_INT_PROPERTY(RuntimeConfig, Test);
 };
 
 #endif //!__RUNTIMECONFIG_H__

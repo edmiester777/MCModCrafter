@@ -25,6 +25,15 @@
 
 #define MB10 1024*1024*10
 
+void CreateDirIfNotExists(QString dir)
+{
+    QDir d(dir);
+    if(!d.exists())
+    {
+        d.mkpath(".");
+    }
+}
+
 int main(int argc, char *argv[])
 {
     // configuring logger
@@ -52,6 +61,9 @@ int main(int argc, char *argv[])
 
     // constructing logger
     SimpleQtLogger::createInstance(nullptr)->setLogFileName("logs/MCModCrafter.log", MB10, 50);
+    CreateDirIfNotExists(RuntimeConfig::Instance()->GetProjectsDirectory());
+    CreateDirIfNotExists(RuntimeConfig::Instance()->GetDownloadsDirectory());
+    
 
     // running application
     QApplication a(argc, argv);

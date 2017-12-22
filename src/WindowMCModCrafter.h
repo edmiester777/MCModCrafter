@@ -27,12 +27,11 @@
 class MCModCrafter : public QMainWindow
 {
     Q_OBJECT
-
 public:
     MCModCrafter(QWidget *parent = Q_NULLPTR);
 
 private:
-    Ui::WindowMCModCrafter ui;
+    Ui::WindowMCModCrafter m_ui;
 };
 
 #endif //!__WINDOWMCMODCRAFTER_H__
