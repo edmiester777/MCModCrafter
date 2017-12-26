@@ -27,14 +27,14 @@
 class ProjectConfig : public ConfigBase
 {
 public:
-    ProjectConfig(QString path);
+    using ConfigBase::ConfigBase;
 
 private:
-    CONFIG_STRING_PROPERTY(ProjectConfig, ProjectName);
-    CONFIG_STRING_PROPERTY(ProjectConfig, ProjectDescription);
-    CONFIG_STRING_PROPERTY(ProjectConfig, ProjectModID);
-    CONFIG_STRING_PROPERTY(ProjectConfig, ProjectAuthor);
-    CONFIG_STRING_PROPERTY(ProjectConfig, ProjectVersion);
+    CONFIG_STRING_PROPERTY(ProjectName);
+    CONFIG_STRING_PROPERTY(ProjectDescription);
+    CONFIG_STRING_PROPERTY(ProjectModID);
+    CONFIG_STRING_PROPERTY(ProjectAuthor);
+    CONFIG_STRING_PROPERTY(ProjectVersion);
 };
 
 #endif //!__PROJECTCONFIG_H__

@@ -28,7 +28,7 @@ class ConfigBase;
 /**
  * Definition for a list of json values for shorthand use later.
  */
-typedef QMap<QString, QJsonValue*> JsonValueMemberMap;
+typedef QMap<QString, QJsonValue> JsonValueMemberMap;
 
 typedef void(*JsonSetter)(void*, QJsonValue*);
 
@@ -40,30 +40,20 @@ typedef QMap<QString, void(*)(void*, QJsonValue*)> JsonValueSetterMap;
 /**
  * Macro to define a config property in the config standard.
  *
+ * @param cls Class that you are adding this property to.
  * @param type Type of object being declared.
  * @param name Name (non-string) for object.
  * @param getterFunc Function used on QVariant used to get correct value.
  */
-#define CONFIG_PROPERTY(cls, type, name, getterFunc) \
-    friend void Set##name##Raw(void*, QJsonValue*); \
-    private: QJsonValue* m_##name = AddMember(#name, &Set##name##Raw); \
-    private: static void Set##name##Raw(void* p, QJsonValue* value) \
-    { \
-        cls* obj = static_cast<cls*>(p); \
-        if(obj->m_##name != nullptr) \
-        { \
-            delete obj->m_##name; \
-        } \
-        obj->m_values[#name] = value; \
-        obj->m_##name = value;\
-    } \
-    public: void Set##name(type value) { m_##name->fromVariant(value); } \
-    public: type Get##name() { return m_##name->##getterFunc##(); }
+#define CONFIG_PROPERTY(type, name, getterFunc) \
+    private: QJsonValue* ___m_donotaccess_##name = AddMember(#name); \
+    public: void Set##name(type value) { m_values[#name] = QJsonValue::fromVariant(value); } \
+    public: type Get##name() { return m_values[#name].##getterFunc##(); }
 
-#define CONFIG_STRING_PROPERTY(cls, name) CONFIG_PROPERTY(##cls, QString, ##name, toString)
-#define CONFIG_BOOL_PROPERTY(cls, name) CONFIG_PROPERTY(##cls, bool, ##name, toBool)
-#define CONFIG_INT_PROPERTY(cls, name) CONFIG_PROPERTY(##cls, int, ##name, toInt)
-#define CONFIG_DOUBLE_PROPERTY(cls, name) CONFIG_PROPERTY(##cls, double, ##name, toDouble)
+#define CONFIG_STRING_PROPERTY(name) CONFIG_PROPERTY(QString, ##name, toString)
+#define CONFIG_BOOL_PROPERTY(name) CONFIG_PROPERTY(bool, ##name, toBool)
+#define CONFIG_INT_PROPERTY(name) CONFIG_PROPERTY(int, ##name, toInt)
+#define CONFIG_DOUBLE_PROPERTY(name) CONFIG_PROPERTY(double, ##name, toDouble)
 
 /**
  * @brief Config base class.
@@ -80,25 +70,35 @@ public:
      * @brief Constructor
      *
      * Construct a configuration.
-     *
-     * @param path Path to file to save/load to/from.
      */
-    ConfigBase(QString path);
+    ConfigBase();
+    ConfigBase(const ConfigBase& rhs);
     virtual ~ConfigBase();
+    virtual ConfigBase& operator=(const ConfigBase& rhs);
 
     /**
+     * @brief Save this config.
      *
+     * Save this config to a said path.
+     *
+     * @param path Path to file to save to.
+     * @return Success
      */
-    bool Save();
-    bool Load();
+    bool Save(QString path);
+
+    /**
+     * @brief Load a config from disk.
+     *
+     * Load a saved configuration from a file.
+     *
+     * @param path Path to load from.
+     * @return Success
+     */
+    bool Load(QString path);
 
 protected:
-    QJsonValue* AddMember(QString memberName, JsonSetter setter);
+    QJsonValue* AddMember(QString memberName);
     JsonValueMemberMap m_values;
-    JsonValueSetterMap m_setters;
-
-private:
-    QString m_path;
 };
 
 #endif //!__CONFIGBASE_H__

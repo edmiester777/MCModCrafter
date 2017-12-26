@@ -23,6 +23,7 @@
 
 #include <QDialog>
 #include <ui_DialogCreateProject.h>
+#include "ProjectConfig.h"
 
 class DialogCreateProject : public QDialog
 {
@@ -30,8 +31,19 @@ class DialogCreateProject : public QDialog
 public:
     DialogCreateProject(QWidget *parent = Q_NULLPTR);
 
+    /**
+     * Get the config that was generated using this dialog.
+     *
+     * @return Config generated if this dialog was accept()ed.
+     */
+    ProjectConfig& Config();
+
+private slots:
+    void ValidateInfo();
+
 private:
     Ui::DialogCreateProject m_ui;
+    ProjectConfig m_config;
 };
 
 #endif //!__DIALOGCREATEPROJECT_H__

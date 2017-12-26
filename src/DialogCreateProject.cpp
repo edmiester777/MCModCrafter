@@ -20,9 +20,50 @@
 
 #include <stdafx.h>
 #include "DialogCreateProject.h"
+#include <QMessageBox>
 
 DialogCreateProject::DialogCreateProject(QWidget *parent)
     : QDialog(parent)
 {
+    setWindowTitle("Create Project");
+
     m_ui.setupUi(this);
+    
+    connect(m_ui.dialogButtons, SIGNAL(accepted()), this, SLOT(ValidateInfo()));
+    connect(m_ui.dialogButtons, SIGNAL(rejected()), this, SLOT(reject()));
+}
+
+void DialogCreateProject::ValidateInfo()
+{
+    bool accepted =
+        !m_ui.projectNameLineEdit->text().isEmpty() &&
+        !m_ui.projectDescriptionLineEdit->text().isEmpty() &&
+        !m_ui.projectModIDLineEdit->text().isEmpty() &&
+        !m_ui.projectAuthorLineEdit->text().isEmpty() &&
+        !m_ui.projectVersionLineEdit->text().isEmpty();
+    if(!accepted)
+    {
+        QMessageBox mbox(
+            QMessageBox::Icon::Warning,
+            "Error",
+            "Please fill out all fields before creating project.",
+            QMessageBox::Button::Ok
+        );
+        mbox.exec();
+    }
+    else
+    {
+        m_config = ProjectConfig();
+        m_config.SetProjectName(m_ui.projectNameLineEdit->text());
+        m_config.SetProjectDescription(m_ui.projectDescriptionLineEdit->text());
+        m_config.SetProjectModID(m_ui.projectModIDLineEdit->text());
+        m_config.SetProjectAuthor(m_ui.projectAuthorLineEdit->text());
+        m_config.SetProjectVersion(m_ui.projectVersionLineEdit->text());
+        accept();
+    }
+}
+
+ProjectConfig& DialogCreateProject::Config()
+{
+    return m_config;
 }

@@ -29,12 +29,12 @@ class RuntimeConfig : public ConfigBase
 public:
     static RuntimeConfig* Instance();
 
-    RuntimeConfig();
-
 private:
-    CONFIG_STRING_PROPERTY(RuntimeConfig, ProjectsDirectory);
-    CONFIG_STRING_PROPERTY(RuntimeConfig, DownloadsDirectory);
-    CONFIG_STRING_PROPERTY(RuntimeConfig, MinecraftForgeUrl);
+    CONFIG_STRING_PROPERTY(LogsDirectory);
+    CONFIG_STRING_PROPERTY(ProjectsDirectory);
+    CONFIG_STRING_PROPERTY(DownloadsDirectory);
+    CONFIG_STRING_PROPERTY(ProjectConfigName);
+    CONFIG_STRING_PROPERTY(MinecraftForgeUrl);
 };
 
 #endif //!__RUNTIMECONFIG_H__

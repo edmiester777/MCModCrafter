@@ -27,16 +27,11 @@ RuntimeConfig* RuntimeConfig::Instance()
     if(config == nullptr)
     {
         config = new RuntimeConfig;
-        if(!config->Load())
+        if(!config->Load(":/MCModCrafter/runtimeconfig.json"))
         {
             L_FATAL("Failed to load runtime configuration.");
             throw std::exception("Could not load a crucial configuration file.");
         }
     }
     return config;
-}
-
-RuntimeConfig::RuntimeConfig()
-    : ConfigBase(":/MCModCrafter/runtimeconfig.json")
-{
 }

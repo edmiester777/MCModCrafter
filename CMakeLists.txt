@@ -46,6 +46,7 @@ set(MCMODCRAFTER_HEADERS
     src/ProjectConfig.h
     src/FileDownloader.h
     src/WindowMCModCrafter.h
+    src/WidgetSelectProject.h
     src/DialogCreateProject.h
 
     # third party
@@ -57,9 +58,9 @@ set(MCMODCRAFTER_SOURCES
     src/stdafx.cpp
     src/ConfigBase.cpp
     src/RuntimeConfig.cpp
-    src/ProjectConfig.cpp
     src/FileDownloader.cpp
     src/WindowMCModCrafter.cpp
+    src/WidgetSelectProject.cpp
     src/DialogCreateProject.cpp
 
     # third party
@@ -68,6 +69,7 @@ set(MCMODCRAFTER_SOURCES
 
 set(MCMODCRAFTER_FORMS
     src/forms/WindowMCModCrafter.ui
+    src/forms/WidgetSelectProject.ui
     src/forms/DialogCreateProject.ui
 )
 

@@ -20,9 +20,25 @@
 
 #include <stdafx.h>
 #include "WindowMCModCrafter.h"
+#include "WidgetSelectProject.h"
 
 MCModCrafter::MCModCrafter(QWidget *parent)
     : QMainWindow(parent)
 {
     m_ui.setupUi(this);
+    m_content = nullptr;
+
+    SetContent(new WidgetSelectProject);
+}
+
+void MCModCrafter::SetContent(QWidget* content)
+{
+    if(m_content != nullptr)
+    {
+        delete m_content;
+    }
+    m_content = content;
+    QVBoxLayout *layout = new QVBoxLayout;
+    layout->addWidget(m_content);
+    m_ui.centralWidget->setLayout(layout);
 }

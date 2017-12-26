@@ -25,6 +25,8 @@
 
 #define MB10 1024*1024*10
 
+#define LOG_FMT "[<TS>][<TID>][<LL>][<FUNC>:<LINE>] <TEXT>"
+
 void CreateDirIfNotExists(QString dir)
 {
     QDir d(dir);
@@ -52,7 +54,6 @@ int main(int argc, char *argv[])
     simpleqtlogger::EnableLogLevels enableLogLevels_console = simpleqtlogger::ENABLE_LOG_LEVELS;
     simpleqtlogger::EnableLogLevels enableLogLevels_qDebug = simpleqtlogger::ENABLE_LOG_LEVELS;
     simpleqtlogger::EnableLogLevels enableLogLevels_signal = simpleqtlogger::ENABLE_LOG_LEVELS;
-    enableLogLevels_console.logLevel_FUNCTION = false;
     simpleqtlogger::EnableLogLevels enableLogLevels_fileWarn = simpleqtlogger::ENABLE_LOG_LEVELS;
     enableLogLevels_fileWarn.logLevel_NOTE = false;
     enableLogLevels_fileWarn.logLevel_INFO = false;
@@ -61,13 +62,20 @@ int main(int argc, char *argv[])
 
     // constructing logger
     SimpleQtLogger::createInstance(nullptr)->setLogFileName("logs/MCModCrafter.log", MB10, 50);
+    SimpleQtLogger::getInstance()->setLogFormat_console(LOG_FMT, LOG_FMT);\
+
+    // creating necessary directories
+    CreateDirIfNotExists(RuntimeConfig::Instance()->GetLogsDirectory());
     CreateDirIfNotExists(RuntimeConfig::Instance()->GetProjectsDirectory());
     CreateDirIfNotExists(RuntimeConfig::Instance()->GetDownloadsDirectory());
     
 
     // running application
+    L_INFO("Initializing MCModCrafter...");
     QApplication a(argc, argv);
     MCModCrafter w;
     w.show();
     return a.exec();
 }
+
+#undef LOG_FMT

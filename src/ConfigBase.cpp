@@ -21,28 +21,33 @@
 #include <stdafx.h>
 #include "ConfigBase.h"
 
-ConfigBase::ConfigBase(QString path)
-    : QObject(nullptr),
-    m_path(path)
+ConfigBase::ConfigBase()
+    : QObject(nullptr)
 {
-    
+}
+
+ConfigBase::ConfigBase(const ConfigBase& rhs)
+{
+    if(this != &rhs)
+    {
+        *this = rhs;
+    }
 }
 
 ConfigBase::~ConfigBase()
 {
-    for(JsonValueMemberMap::iterator iter = m_values.begin();
-        iter != m_values.end();
-        ++iter)
-    {
-        delete iter.value();
-    }
-    m_values.clear();
 }
 
-bool ConfigBase::Save()
+ConfigBase& ConfigBase::operator=(const ConfigBase& rhs)
+{
+    m_values = rhs.m_values;
+    return *this;
+}
+
+bool ConfigBase::Save(QString path)
 {
     // opening file for read/write
-    QFile file(m_path);
+    QFile file(path);
     if(file.open(QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text))
     {
         QJsonObject obj;
@@ -50,9 +55,9 @@ bool ConfigBase::Save()
             iter != m_values.end();
             ++iter)
         {
-            if(!iter.value()->isUndefined())
+            if(!iter.value().isUndefined())
             {
-                obj[iter.key()] = *iter.value();
+                obj[iter.key()] = iter.value();
             }
         }
         QJsonDocument doc;
@@ -74,11 +79,12 @@ bool ConfigBase::Save()
         L_ERROR("Could not overwrite config file.");
     }
     file.close();
+    return false;
 }
 
-bool ConfigBase::Load()
+bool ConfigBase::Load(QString path)
 {
-    QFile file(m_path);
+    QFile file(path);
     if(file.exists())
     {
         if(file.open(QIODevice::ReadOnly))
@@ -90,7 +96,7 @@ bool ConfigBase::Load()
             {
                 L_WARN(
                     QString("Failed to parse %1 with message %2")
-                    .arg(m_path, err.errorString())
+                    .arg(path, err.errorString())
                 );
             }
             else
@@ -103,26 +109,24 @@ bool ConfigBase::Load()
                     QString key = iter.key();
                     if(obj.contains(key))
                     {
-                        (*m_setters[key])(this, new QJsonValue(obj[key]));
+                        m_values[key] = QJsonValue::fromVariant(obj[key].toVariant());
                     }
                 }
 
-                L_INFO(QString("Loaded %1!").arg(m_path));
+                L_INFO(QString("Loaded %1!").arg(path));
                 return true;
             }
         }
         else
         {
-            L_WARN(QString("Failed to open %1.").arg(m_path));
+            L_WARN(QString("Failed to open %1.").arg(path));
         }
     }
     return false;
 }
 
-QJsonValue* ConfigBase::AddMember(QString memberName, JsonSetter setter)
+QJsonValue* ConfigBase::AddMember(QString memberName)
 {
-    QJsonValue* val = new QJsonValue;
-    m_values[memberName] = val;
-    m_setters[memberName] = setter;
-    return val;
+    m_values[memberName] = QJsonValue();
+    return nullptr;
 }
