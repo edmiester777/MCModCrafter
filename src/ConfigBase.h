@@ -22,7 +22,7 @@
 #define __CONFIGBASE_H__
 
 #include "stdafx.h"
-
+ 
 class ConfigBase;
 
 /**
@@ -30,12 +30,10 @@ class ConfigBase;
  */
 typedef QMap<QString, QJsonValue> JsonValueMemberMap;
 
-typedef void(*JsonSetter)(void*, QJsonValue*);
-
 /**
- * Definition for a list of setters for properties.
+ * Definition for object members.
  */
-typedef QMap<QString, void(*)(void*, QJsonValue*)> JsonValueSetterMap;
+typedef QMap<QString, ConfigBase> JsonObjectMemberMap;
 
 /**
  * Macro to define a config property in the config standard.
@@ -55,6 +53,10 @@ typedef QMap<QString, void(*)(void*, QJsonValue*)> JsonValueSetterMap;
 #define CONFIG_INT_PROPERTY(name) CONFIG_PROPERTY(int, ##name, toInt)
 #define CONFIG_DOUBLE_PROPERTY(name) CONFIG_PROPERTY(double, ##name, toDouble)
 
+#define CONFIG_OBJECT_PROPERTY(type, name) \
+    private: ConfigBase* ___m_donotaccess_##name = AddObjectMember<type>(#name); \
+    public: type* ##name() { return static_cast<type*>(&m_objects[#name]); }
+
 /**
  * @brief Config base class.
  *
@@ -72,6 +74,7 @@ public:
      * Construct a configuration.
      */
     ConfigBase();
+    ConfigBase(QJsonObject obj);
     ConfigBase(const ConfigBase& rhs);
     virtual ~ConfigBase();
     virtual ConfigBase& operator=(const ConfigBase& rhs);
@@ -96,9 +99,37 @@ public:
      */
     bool Load(QString path);
 
+    /**
+     * @brief Convert this config to an object.
+     *
+     * This will do the opposite of loading.
+     *
+     * @return Config in JSON form.
+     */
+    QJsonObject ToObject();
+
 protected:
     QJsonValue* AddMember(QString memberName);
+    template<class T>
+    ConfigBase* AddObjectMember(QString memberName);
     JsonValueMemberMap m_values;
+    JsonObjectMemberMap m_objects;
+
+private:
+    /**
+     * Load this configuration from a json object.
+     *
+     * @param obj Object to load from.
+     */
+    void LoadFromObject(QJsonObject obj);
 };
+
+template<class T>
+ConfigBase* ConfigBase::AddObjectMember(QString memberName)
+{
+    T member;
+    m_objects[memberName] = member;
+    return nullptr;
+}
 
 #endif //!__CONFIGBASE_H__
