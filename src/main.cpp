@@ -73,8 +73,6 @@ int main(int argc, char *argv[])
 
     // running application
     L_INFO("Initializing MCModCrafter...");
-    L_INFO(QString("Test value[0]: %1").arg(RuntimeConfig::Instance()->Tests()[0].GetTest1()));
-    L_INFO(QString("Test value[1]: %1").arg(RuntimeConfig::Instance()->Tests()[1].GetTest1()));
     QApplication a(argc, argv);
     MCModCrafter w;
     w.show();
