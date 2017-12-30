@@ -36,6 +36,11 @@ typedef QMap<QString, QJsonValue> JsonValueMemberMap;
 typedef QMap<QString, ConfigBase> JsonObjectMemberMap;
 
 /**
+ * Definition for an array of json values.
+ */
+typedef QMap<QString, QJsonArray> JsonArrayMemberMap;
+
+/**
  * Macro to define a config property in the config standard.
  *
  * @param cls Class that you are adding this property to.
@@ -46,16 +51,76 @@ typedef QMap<QString, ConfigBase> JsonObjectMemberMap;
 #define CONFIG_PROPERTY(type, name, getterFunc) \
     private: QJsonValue* ___m_donotaccess_##name = AddMember(#name); \
     public: void Set##name(type value) { m_values[#name] = QJsonValue::fromVariant(value); } \
-    public: type Get##name() { return m_values[#name].##getterFunc##(); }
+    public: type Get##name()const { return m_values[#name].##getterFunc##(); }
 
 #define CONFIG_STRING_PROPERTY(name) CONFIG_PROPERTY(QString, ##name, toString)
 #define CONFIG_BOOL_PROPERTY(name) CONFIG_PROPERTY(bool, ##name, toBool)
 #define CONFIG_INT_PROPERTY(name) CONFIG_PROPERTY(int, ##name, toInt)
 #define CONFIG_DOUBLE_PROPERTY(name) CONFIG_PROPERTY(double, ##name, toDouble)
 
+/**
+ * Use this when defining a member that is an object. The member will have
+ * to be a child of ConfigBase.
+ *
+ * @param type Type of object that this member will be (child of ConfigBase).
+ * @param name Name of member.
+ */
 #define CONFIG_OBJECT_PROPERTY(type, name) \
     private: ConfigBase* ___m_donotaccess_##name = AddObjectMember<type>(#name); \
     public: type* ##name() { return static_cast<type*>(&m_objects[#name]); }
+
+/**
+ * Use this when defining an array of primitive types supported by JSON.
+ *
+ * @param type JSON primitive type that will be stored in this array.
+ * @param name Name of member (without plurality) that will be saved/loaded.
+ * @param getterFunc Function to call on QJsonValue when getting stored value.
+ */
+#define CONFIG_ARRAY_PROPERTY(type, name, getterFunc) \
+    private: QJsonArray* ___m_donotaccess_##name = AddArrayMember(#name); \
+    public: void Add##name(type value) { m_arrays[#name].append(value); } \
+    public: QVector<type> ##name##s()const \
+    { \
+        QVector<type> vec; \
+        QJsonArray arr = m_arrays[#name]; \
+        for(QJsonArray::iterator iter = arr.begin(); \
+            iter != arr.end(); \
+            ++iter) \
+        { \
+            vec.push_back((*iter).##getterFunc()); \
+        } \
+        return vec; \
+    }
+
+#define CONFIG_STRING_ARRAY_PROPERTY(name) CONFIG_ARRAY_PROPERTY(QString, ##name, toString)
+#define CONFIG_BOOL_ARRAY_PROPERTY(name) CONFIG_ARRAY_PROPERTY(bool, ##name, toBool)
+#define CONFIG_INT_ARRAY_PROPERTY(name) CONFIG_ARRAY_PROPERTY(int, ##name, toInt)
+#define CONFIG_DOUBLE_ARRAY_PROPERTY(name) CONFIG_ARRAY_PROPERTY(double, ##name, toDouble)
+
+/**
+ * Use this when defining an array of object types. These objects must all be of the same
+ * type, and be a child of ConfigBase.
+ *
+ * @param class Class (child of ConfigBase) that you expect to be stored in the array.
+ * @param name Name (without plurality) for the member.
+ */
+#define CONFIG_OBJECT_ARRAY_PROPERTY(cls, name) \
+    private: QJsonArray* ___m_donotaccess_##name = AddArrayMember(#name); \
+    public: void Add##name(cls value) { m_arrays[#name].append(value.ToObject()); } \
+    public: QVector<cls> ##name##s()const \
+    { \
+        QVector<cls> vec; \
+        QJsonArray arr = m_arrays[#name]; \
+        for(QJsonArray::iterator iter = arr.begin(); \
+            iter != arr.end(); \
+            ++iter) \
+        { \
+            cls tmp = cls(); \
+            tmp.LoadFromObject((*iter).toObject()); \
+            vec.push_back(tmp); \
+        } \
+        return vec; \
+    }
 
 /**
  * @brief Config base class.
@@ -100,6 +165,13 @@ public:
     bool Load(QString path);
 
     /**
+     * Load this configuration from a json object.
+     *
+     * @param obj Object to load from.
+     */
+    void LoadFromObject(QJsonObject obj);
+
+    /**
      * @brief Convert this config to an object.
      *
      * This will do the opposite of loading.
@@ -112,16 +184,10 @@ protected:
     QJsonValue* AddMember(QString memberName);
     template<class T>
     ConfigBase* AddObjectMember(QString memberName);
+    QJsonArray* AddArrayMember(QString memberName);
     JsonValueMemberMap m_values;
     JsonObjectMemberMap m_objects;
-
-private:
-    /**
-     * Load this configuration from a json object.
-     *
-     * @param obj Object to load from.
-     */
-    void LoadFromObject(QJsonObject obj);
+    JsonArrayMemberMap m_arrays;
 };
 
 template<class T>

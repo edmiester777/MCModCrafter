@@ -41,11 +41,11 @@ int main(int argc, char *argv[])
     // configuring logger
     simpleqtlogger::ENABLE_LOG_SINK_FILE = true;
     simpleqtlogger::ENABLE_LOG_SINK_CONSOLE = true;
-    simpleqtlogger::ENABLE_LOG_SINK_QDEBUG = false;
+    simpleqtlogger::ENABLE_LOG_SINK_QDEBUG = true;
     simpleqtlogger::ENABLE_LOG_SINK_SIGNAL = true;
     // set log-features
     simpleqtlogger::ENABLE_FUNCTION_STACK_TRACE = true;
-    simpleqtlogger::ENABLE_CONSOLE_COLOR = true;
+    simpleqtlogger::ENABLE_CONSOLE_COLOR = false;
     // set log-levels (global; all enabled)
     simpleqtlogger::ENABLE_LOG_LEVELS.logLevel_DEBUG = true;
     simpleqtlogger::ENABLE_LOG_LEVELS.logLevel_FUNCTION = true;
@@ -62,7 +62,8 @@ int main(int argc, char *argv[])
 
     // constructing logger
     SimpleQtLogger::createInstance(nullptr)->setLogFileName("logs/MCModCrafter.log", MB10, 50);
-    SimpleQtLogger::getInstance()->setLogFormat_console(LOG_FMT, LOG_FMT);\
+    SimpleQtLogger::getInstance()->setLogFormat_console(LOG_FMT, LOG_FMT);
+    SimpleQtLogger::getInstance()->setLogLevels_console(enableLogLevels_console);
 
     // creating necessary directories
     CreateDirIfNotExists(RuntimeConfig::Instance()->GetLogsDirectory());
@@ -72,6 +73,8 @@ int main(int argc, char *argv[])
 
     // running application
     L_INFO("Initializing MCModCrafter...");
+    L_INFO(QString("Test value[0]: %1").arg(RuntimeConfig::Instance()->Tests()[0].GetTest1()));
+    L_INFO(QString("Test value[1]: %1").arg(RuntimeConfig::Instance()->Tests()[1].GetTest1()));
     QApplication a(argc, argv);
     MCModCrafter w;
     w.show();

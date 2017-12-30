@@ -29,10 +29,14 @@ ConfigBase::ConfigBase()
 ConfigBase::ConfigBase(QJsonObject obj)
     : QObject(nullptr)
 {
+    L_WARN("Usage of ConfigBase::ConfigBase(QJsonObject) is unpredictable."
+           " Use ConfigBase::LoadFromObject(QJsonObject) instead."
+           " You have been warned!");
     LoadFromObject(obj);
 }
 
 ConfigBase::ConfigBase(const ConfigBase& rhs)
+    : QObject(nullptr)
 {
     if(this != &rhs)
     {
@@ -48,6 +52,7 @@ ConfigBase& ConfigBase::operator=(const ConfigBase& rhs)
 {
     m_values = rhs.m_values;
     m_objects = rhs.m_objects;
+    m_arrays = rhs.m_arrays;
     return *this;
 }
 
@@ -66,6 +71,18 @@ bool ConfigBase::Save(QString path)
             {
                 obj[iter.key()] = iter.value();
             }
+        }
+        for(JsonObjectMemberMap::iterator iter = m_objects.begin();
+            iter != m_objects.end();
+            ++iter)
+        {
+            obj[iter.key()] = iter.value().ToObject();
+        }
+        for(JsonArrayMemberMap::iterator iter = m_arrays.begin();
+            iter != m_arrays.end();
+            ++iter)
+        {
+            obj[iter.key()] = iter.value();
         }
         QJsonDocument doc;
         doc.setObject(obj);
@@ -120,6 +137,58 @@ bool ConfigBase::Load(QString path)
     return false;
 }
 
+void ConfigBase::LoadFromObject(QJsonObject obj)
+{
+    for (JsonValueMemberMap::iterator iter = m_values.begin();
+        iter != m_values.end();
+        ++iter)
+    {
+        QString key = iter.key();
+        if (obj.contains(key))
+        {
+            L_DEBUG(QString("Found value for property \"%1\".").arg(key));
+            m_values[key] = QJsonValue::fromVariant(obj[key].toVariant());
+        }
+        else
+        {
+            L_DEBUG(QString("Key \"%1\" not found.").arg(key));
+            m_values[key].fromVariant(QVariant());
+        }
+    }
+    for (JsonObjectMemberMap::iterator iter = m_objects.begin();
+        iter != m_objects.end();
+        ++iter)
+    {
+        QString key = iter.key();
+        if (obj.contains(key) && obj[key].isObject())
+        {
+            L_DEBUG(QString("Found object for property \"%1\".").arg(key));
+            iter.value().LoadFromObject(obj[key].toObject());
+        }
+        else
+        {
+            L_DEBUG(QString("Key \"%1\" not found or was an unexpected type.").arg(key));
+            iter.value().LoadFromObject(QJsonObject());
+        }
+    }
+    for (JsonArrayMemberMap::iterator iter = m_arrays.begin();
+        iter != m_arrays.end();
+        ++iter)
+    {
+        QString key = iter.key();
+        if (obj.contains(key) && obj[key].isArray())
+        {
+            L_DEBUG(QString("Found array for property \"%1\".").arg(key));
+            m_arrays[key] = obj[key].toArray();
+        }
+        else
+        {
+            L_DEBUG(QString("Key \"%1\" not found or was an unexpected type.").arg(key));
+        }
+    }
+}
+
+
 QJsonObject ConfigBase::ToObject()
 {
     QJsonObject obj;
@@ -129,6 +198,18 @@ QJsonObject ConfigBase::ToObject()
         ++iter)
     {
         obj.insert(iter.key(), m_values[iter.key()]);
+    }
+    for(JsonObjectMemberMap::iterator iter = m_objects.begin();
+        iter != m_objects.end();
+        ++iter)
+    {
+        obj.insert(iter.key(), m_objects[iter.key()].ToObject());
+    }
+    for(JsonArrayMemberMap::iterator iter = m_arrays.begin();
+        iter != m_arrays.end();
+        ++iter)
+    {
+        obj.insert(iter.key(), m_arrays[iter.key()]);
     }
 
     return obj;
@@ -140,36 +221,8 @@ QJsonValue* ConfigBase::AddMember(QString memberName)
     return nullptr;
 }
 
-void ConfigBase::LoadFromObject(QJsonObject obj)
+QJsonArray * ConfigBase::AddArrayMember(QString memberName)
 {
-    for(JsonValueMemberMap::iterator iter = m_values.begin();
-        iter != m_values.end();
-        ++iter)
-    {
-        QString key = iter.key();
-        if (obj.contains(key))
-        {
-            L_INFO(QString("Found value for property \"%1\".").arg(key));
-            m_values[key] = QJsonValue::fromVariant(obj[key].toVariant());
-        }
-        else
-        {
-            m_values[key].fromVariant(QVariant());
-        }
-    }
-    for(JsonObjectMemberMap::iterator iter = m_objects.begin();
-        iter != m_objects.end();
-        ++iter)
-    {
-        QString key = iter.key();
-        if(obj.contains(key) && obj[key].isObject())
-        {
-            L_INFO(QString("Found object for property \"%1\".").arg(key));
-            iter.value().LoadFromObject(obj[key].toObject());
-        }
-        else
-        {
-            iter.value().LoadFromObject(QJsonObject());
-        }
-    }
+    m_arrays[memberName] = QJsonArray();
+    return nullptr;
 }
