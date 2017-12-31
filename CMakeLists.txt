@@ -30,6 +30,16 @@ elseif(DEFINED ENV{QTDIR})
     list(APPEND CMAKE_PREFIX_PATH "$ENV{QTDIR}")
 endif()
 
+# Setting boost install path
+set(Boost_USE_STATIC_LIBS ON)
+set(Boost_USE_MULTITHREADED ON)
+set(Boost_USE_STATIC_RUNTIME OFF)
+if(DEFINED BOOSTDIR)
+    set(BOOSTROOT "${BOOSTDIR}")
+elseif(DEFINED ENV{BOOSTDIR})
+    set(BOOSTROOT "$ENV{BOOSTDIR}")
+endif()
+
 # Finding required qt packages
 find_package(Qt5 COMPONENTS
     Core
@@ -37,6 +47,17 @@ find_package(Qt5 COMPONENTS
     Network
     REQUIRED
 )
+
+# finding other packages.
+find_package(PythonInterp 2.7 EXACT REQUIRED)
+find_package(PythonLibs 2.7 EXACT REQUIRED)
+find_package(Boost 1.64 COMPONENTS
+    python
+    REQUIRED
+)
+if(MSVC)
+    add_definitions(-DBOOST_PYTHON_STATIC_LIB)
+endif()
 
 # Source definitions
 set(MCMODCRAFTER_HEADERS
@@ -91,10 +112,32 @@ target_link_libraries(frontend
     Qt5::Core
     Qt5::Widgets
     Qt5::Network
+    ${Boost_LIBRARIES}
+    ${PYTHON_LIBRARIES}
 )
+message(STATUS "${Boost_LIBRARIES}")
 
-include_directories(third_party/SimpleQtLogger)
+include_directories(
+    third_party/SimpleQtLogger
+    ${Boost_INCLUDE_DIRS}
+    ${PYTHON_INCLUDE_DIRS}
+)
 target_include_directories(frontend PUBLIC "${CMAKE_SOURCE_DIR}/src")
+
+# Copying python libraries on build.
+get_filename_component(PYTHON_LIBS_DIR ${PYTHON_EXECUTABLE} DIRECTORY)
+file(GLOB_RECURSE pylibfiles RELATIVE "${PYTHON_LIBS_DIR}" "*")
+if(MSVC)
+    # Preparing for cross platform build.
+    # Copying python libraries.
+    add_custom_command(
+        TARGET frontend POST_BUILD
+        COMMAND xcopy ARGS "\"${PYTHON_LIBS_DIR}/Lib\"" "\"$<TARGET_FILE_DIR:frontend>/pylibs\""
+            /E /D /Y /H /R /C /I
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    )
+else()
+endif()
 
 
 # Enabling install during build.

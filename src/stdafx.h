@@ -18,6 +18,7 @@
 * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 *************************************************************************/
 
+#include <boost/python.hpp>
 #include <QtCore>
 #include <QtWidgets>
 #include <QJsonDocument>

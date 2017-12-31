@@ -70,12 +70,21 @@ int main(int argc, char *argv[])
     CreateDirIfNotExists(RuntimeConfig::Instance()->GetProjectsDirectory());
     CreateDirIfNotExists(RuntimeConfig::Instance()->GetDownloadsDirectory());
 
+    QApplication a(argc, argv);
+
+    L_INFO("Initializing python interpreter...");
+    QString pypath = a.applicationDirPath() + "/pylibs";
+    char* pypathc = strdup(pypath.toStdString().c_str());
+    Py_Initialize();
+    Py_SetPythonHome(pypathc);
+
     // running application
     L_INFO("Initializing MCModCrafter...");
-    QApplication a(argc, argv);
     MCModCrafter w;
     w.show();
     return a.exec();
+    Py_Finalize();
+    delete[] pypathc;
 }
 
 #undef LOG_FMT
