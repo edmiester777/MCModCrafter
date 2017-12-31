@@ -66,6 +66,7 @@ set(MCMODCRAFTER_HEADERS
     src/RuntimeConfig.h
     src/ProjectConfig.h
     src/FileDownloader.h
+    src/ZipUtil.h
     src/WindowMCModCrafter.h
     src/WidgetSelectProject.h
     src/DialogCreateProject.h
@@ -80,6 +81,7 @@ set(MCMODCRAFTER_SOURCES
     src/ConfigBase.cpp
     src/RuntimeConfig.cpp
     src/FileDownloader.cpp
+    src/ZipUtil.cpp
     src/WindowMCModCrafter.cpp
     src/WidgetSelectProject.cpp
     src/DialogCreateProject.cpp
