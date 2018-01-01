@@ -18,8 +18,8 @@
 * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 *************************************************************************/
 
-#ifndef __FILE_DOWNLOADER_H__
-#define __FILE_DOWNLOADER_H__
+#ifndef __ZIPUTIL_H__
+#define __ZIPUTIL_H__
 
 #include "stdafx.h"
 
@@ -46,4 +46,4 @@ public:
     static bool UnzipFile(QString src, QString dest);
 };
 
-#endif //!__FILE_DOWNLOADER_H__
+#endif //!__ZIPUTIL_H__
