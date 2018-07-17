@@ -1,19 +1,19 @@
 /*************************************************************************
 * MCModCrafter Program to help introduce people to minecraft modding and
 * to speed development time via logic visualization.
-* 
+*
 * Copyright (C) 2017 Edward Callahan
-* 
+*
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
-* 
+*
 * This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 * GNU General Public License for more details.
-* 
+*
 * You should have received a copy of the GNU General Public License
 * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 *************************************************************************/
@@ -22,7 +22,7 @@
 #define __CONFIGBASE_H__
 
 #include "stdafx.h"
- 
+
 class ConfigBase;
 
 /**
@@ -51,12 +51,12 @@ typedef QMap<QString, QJsonArray> JsonArrayMemberMap;
 #define CONFIG_PROPERTY(type, name, getterFunc) \
     private: QJsonValue* ___m_donotaccess_##name = AddMember(#name); \
     public: void Set##name(type value) { m_values[#name] = QJsonValue::fromVariant(value); } \
-    public: type Get##name()const { return m_values[#name].##getterFunc##(); }
+    public: type Get##name()const { return m_values[#name].getterFunc(); }
 
-#define CONFIG_STRING_PROPERTY(name) CONFIG_PROPERTY(QString, ##name, toString)
-#define CONFIG_BOOL_PROPERTY(name) CONFIG_PROPERTY(bool, ##name, toBool)
-#define CONFIG_INT_PROPERTY(name) CONFIG_PROPERTY(int, ##name, toInt)
-#define CONFIG_DOUBLE_PROPERTY(name) CONFIG_PROPERTY(double, ##name, toDouble)
+#define CONFIG_STRING_PROPERTY(name) CONFIG_PROPERTY(QString, name, toString)
+#define CONFIG_BOOL_PROPERTY(name) CONFIG_PROPERTY(bool, name, toBool)
+#define CONFIG_INT_PROPERTY(name) CONFIG_PROPERTY(int, name, toInt)
+#define CONFIG_DOUBLE_PROPERTY(name) CONFIG_PROPERTY(double, name, toDouble)
 
 /**
  * Use this when defining a member that is an object. The member will have

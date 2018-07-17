@@ -30,7 +30,7 @@ RuntimeConfig* RuntimeConfig::Instance()
         if(!config->Load(":/MCModCrafter/runtimeconfig.json"))
         {
             L_FATAL("Failed to load runtime configuration.");
-            throw std::exception("Could not load a crucial configuration file.");
+            throw std::runtime_error("Could not load a crucial configuration file.");
         }
     }
     return config;
