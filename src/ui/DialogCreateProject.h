@@ -42,6 +42,8 @@ private slots:
     void ValidateInfo();
 
 private:
+    void SetupNewProject();
+    
     Ui::DialogCreateProject m_ui;
     ProjectConfig m_config;
 };

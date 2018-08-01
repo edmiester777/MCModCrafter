@@ -19,7 +19,7 @@
 *************************************************************************/
 
 #include "stdafx.h"
-#include "WindowMCModCrafter.h"
+#include "ui/WindowMCModCrafter.h"
 #include <QtWidgets/QApplication>
 #include "RuntimeConfig.h"
 

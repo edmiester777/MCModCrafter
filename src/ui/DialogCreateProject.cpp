@@ -21,6 +21,7 @@
 #include <stdafx.h>
 #include "DialogCreateProject.h"
 #include <QMessageBox>
+#include "FileDownloader.h"
 
 DialogCreateProject::DialogCreateProject(QWidget *parent)
     : QDialog(parent)
@@ -66,4 +67,9 @@ void DialogCreateProject::ValidateInfo()
 ProjectConfig& DialogCreateProject::Config()
 {
     return m_config;
+}
+
+void DialogCreateProject::SetupNewProject()
+{
+    FileDownloader downloader;
 }

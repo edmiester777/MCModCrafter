@@ -94,9 +94,9 @@ set(MCMODCRAFTER_HEADERS
     src/ProjectConfig.h
     src/FileDownloader.h
     src/ZipUtil.h
-    src/WindowMCModCrafter.h
-    src/WidgetSelectProject.h
-    src/DialogCreateProject.h
+    src/ui/WindowMCModCrafter.h
+    src/ui/WidgetSelectProject.h
+    src/ui/DialogCreateProject.h
 
     # third party
     third_party/SimpleQtLogger/simpleQtLogger.h
@@ -109,9 +109,9 @@ set(MCMODCRAFTER_SOURCES
     src/RuntimeConfig.cpp
     src/FileDownloader.cpp
     src/ZipUtil.cpp
-    src/WindowMCModCrafter.cpp
-    src/WidgetSelectProject.cpp
-    src/DialogCreateProject.cpp
+    src/ui/WindowMCModCrafter.cpp
+    src/ui/WidgetSelectProject.cpp
+    src/ui/DialogCreateProject.cpp
 
     # third party
     third_party/SimpleQtLogger/simpleQtLogger.cpp
