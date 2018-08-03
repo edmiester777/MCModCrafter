@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
     PyLogger::Init();
 
     L_INFO("Initializing python interpreter...");
-    QString pypath = a.applicationDirPath() + "/pylibs";
+    QString pypath = QDir::currentPath() + "/pylibs";
     char* pypathc = strdup(pypath.toStdString().c_str());
     
     // creating necessary directories
@@ -57,15 +57,34 @@ int main(int argc, char *argv[])
     CreateDirIfNotExists(RuntimeConfig::Instance()->GetProjectsDirectory());
     CreateDirIfNotExists(RuntimeConfig::Instance()->GetDownloadsDirectory());
     
-    PyImport_AppendInittab("mcmod", INIT_MCMODINTERNAL_MODULE);
+    PyImport_AppendInittab("mcmodinternal", INIT_MCMODINTERNAL_MODULE);
+    Py_SetProgramName(pypathc);
     Py_Initialize();
-    Py_SetPythonHome(pypathc);
-
+    
+    // adding current directory to module...
+    L_DEBUG("Adding scripts to interpreter path...");
+    namespace bp = boost::python;
+    try
+    {
+        bp::object sys = bp::import("sys");
+        sys.attr("path").attr("append")(std::string(pypathc));
+    }
+    catch(bp::error_already_set &)
+    {
+        PyErr_Print();
+        PyErr_Clear();
+    }
+    
     // running application
     L_INFO("Initializing MCModCrafter...");
     MCModCrafter w;
     w.show();
     return a.exec();
+    
+#if DEBUG
+    Py_Main(argc, argv);
+#endif // DEBUG
+    
     Py_Finalize();
     delete[] pypathc;
 }

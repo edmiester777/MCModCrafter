@@ -34,6 +34,13 @@ class PyLogger
 {
 public:
     /**
+     * Construct a PyLogger with a name.
+     *
+     * @param Name of plugin that is speaking.
+     */
+    PyLogger(const char* name);
+
+    /**
      * @brief Initialize the internal logger.
      *
      * This will take care of all the initial setup for the logger.
@@ -46,35 +53,38 @@ public:
      *
      * @param text Text to log
      */
-    static void Debug(const char *text);
+    void Debug(const char *text);
     
     /**
      * Log a debug statement
      *
      * @param text Text to log
      */
-    static void Info(const char *text);
+    void Info(const char *text);
     
     /**
      * Log a debug statement
      *
      * @param text Text to log
      */
-    static void Warn(const char *text);
+    void Warn(const char *text);
     
     /**
      * Log a debug statement
      *
      * @param text Text to log
      */
-    static void Error(const char *text);
+    void Error(const char *text);
     
     /**
      * Log a debug statement
      *
      * @param text Text to log
      */
-    static void Fatal(const char *text);
+    void Fatal(const char *text);
+
+private:
+    std::string m_name;
 };
 
 #endif // !__PYLOGGER_H__

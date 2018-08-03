@@ -22,7 +22,13 @@
 
 #define MB10 1024*1024*10
 
+// @TODO: Update when better formats are allowed.
 #define LOG_FMT "[<TS>][<TID>][<LL>][<FUNC>:<LINE>] <TEXT>"
+
+PyLogger::PyLogger(const char* name)
+{
+    m_name = name;
+}
 
 void PyLogger::Init()
 {
@@ -63,27 +69,32 @@ void PyLogger::Init()
 
 void PyLogger::Debug(const char *text)
 {
-    L_DEBUG(text);
+    QString t = "[Plugin][" + QString::fromStdString(m_name) + "] " + text;
+    L_DEBUG(t);
 }
 
 void PyLogger::Info(const char *text)
 {
-    L_INFO(text);
+    QString t = "[Plugin][" + QString::fromStdString(m_name) + "] " + text;
+    L_INFO(t);
 }
 
 void PyLogger::Warn(const char *text)
 {
+    QString t = "[Plugin][" + QString::fromStdString(m_name) + "] " + text;
     L_WARN(text);
 }
 
 void PyLogger::Error(const char *text)
 {
-    L_ERROR(text);
+    QString t = "[Plugin][" + QString::fromStdString(m_name) + "] " + text;
+    L_ERROR(t);
 }
 
 void PyLogger::Fatal(const char *text)
 {
-    L_FATAL(text);
+    QString t = "[Plugin][" + QString::fromStdString(m_name) + "] " + text;
+    L_FATAL(t);
 }
 
 BOOST_PYTHON_MODULE(mcmodinternal)
@@ -94,15 +105,10 @@ BOOST_PYTHON_MODULE(mcmodinternal)
     PyLogger::Init();
     
     // exporting the bridge logger
-    bp::class_<PyLogger>("logger")
+    bp::class_<PyLogger>("Logger", bp::init<const char*>())
     .def("debug", &PyLogger::Debug)
     .def("info", &PyLogger::Info)
     .def("warn", &PyLogger::Warn)
     .def("error", &PyLogger::Error)
-    .def("fatal", &PyLogger::Fatal)
-    .staticmethod("debug")
-    .staticmethod("info")
-    .staticmethod("warn")
-    .staticmethod("error")
-    .staticmethod("fatal");
+    .def("fatal", &PyLogger::Fatal);
 };

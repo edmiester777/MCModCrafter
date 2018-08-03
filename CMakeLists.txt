@@ -217,8 +217,7 @@ if(MSVC)
 endif()
 
 # Definitions
-add_definitions(-DBOOST_PYTHON_STATIC_MODULE)
-add_definitions(-DBOOST_PYTHON_STATIC_LIB)
+add_definitions(-DBOOST_PYTHON_STATIC_MODULE -DBOOST_PYTHON_STATIC_LIB)
 
 # Configuring scripts
 set(MCMODCRAFTER_SCRIPTS
@@ -227,5 +226,5 @@ set(MCMODCRAFTER_SCRIPTS
 )
 foreach(SCRIPT ${MCMODCRAFTER_SCRIPTS})
     message(STATUS "Configuring ${SCRIPT}...")
-    configure_file("${CMAKE_SOURCE_DIR}/pysrc/${SCRIPT}" "${CMAKE_CURRENT_BINARY_DIR}/scripts/${SCRIPT}" COPYONLY)
+    configure_file("${CMAKE_SOURCE_DIR}/pysrc/${SCRIPT}" "${CMAKE_CURRENT_BINARY_DIR}/pylibs/${SCRIPT}" COPYONLY)
 endforeach()
