@@ -25,11 +25,11 @@
 #include <pyplugin/PyLogger.h>
 
 #if PY_MAJOR_VERSION >= 3
-#   define INIT_MCMOD_MODULE PyInit_mcmod
-extern "C" PyObject* INIT_MCMOD_MODULE();
+#   define INIT_MCMODINTERNAL_MODULE PyInit_mcmodinternal
+extern "C" PyObject* INIT_MCMODINTERNAL_MODULE();
 #else
-#   define INIT_MCMOD_MODULE initmcmod
-extern "C" void INIT_MCMOD_MODULE();
+#   define INIT_MCMODINTERNAL_MODULE initmcmodinternal
+extern "C" void INIT_MCMODINTERNAL_MODULE();
 #endif
 
 void CreateDirIfNotExists(QString dir)
@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
     CreateDirIfNotExists(RuntimeConfig::Instance()->GetProjectsDirectory());
     CreateDirIfNotExists(RuntimeConfig::Instance()->GetDownloadsDirectory());
     
-    PyImport_AppendInittab("mcmod", INIT_MCMOD_MODULE);
+    PyImport_AppendInittab("mcmod", INIT_MCMODINTERNAL_MODULE);
     Py_Initialize();
     Py_SetPythonHome(pypathc);
 

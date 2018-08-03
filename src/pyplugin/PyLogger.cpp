@@ -86,7 +86,7 @@ void PyLogger::Fatal(const char *text)
     L_FATAL(text);
 }
 
-BOOST_PYTHON_MODULE(mcmod)
+BOOST_PYTHON_MODULE(mcmodinternal)
 {
     namespace bp = boost::python;
     
