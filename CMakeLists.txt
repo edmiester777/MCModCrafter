@@ -29,11 +29,16 @@ if(DEFINED QTDIR)
 elseif(DEFINED ENV{QTDIR})
     list(APPEND CMAKE_PREFIX_PATH "$ENV{QTDIR}")
 endif()
+if(DEFINED ENV{BOOST_LIBRARYDIR})
+    set(BOOST_LIBRARYDIR "$ENV{BOOST_LIBRARYDIR}")
+endif()
 
 # Setting boost install path
+set(PYTHON_VERSION_MAJOR "2")
+set(PYTHON_VERSION_MINOR "7")
 set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED ON)
-set(Boost_USE_STATIC_RUNTIME OFF)
+set(Boost_USE_STATIC_RUNTIME ON)
 if(DEFINED BOOSTDIR)
     set(BOOSTROOT "${BOOSTDIR}")
 elseif(DEFINED ENV{BOOSTDIR})
@@ -54,28 +59,29 @@ FIND_PACKAGE(PythonInterp)
 if (PYTHONINTERP_FOUND)
   if (UNIX AND NOT APPLE)
     if (PYTHON_VERSION_MAJOR EQUAL 3)
-        FIND_PACKAGE(Boost COMPONENTS python${PYTHON_VERSION_SUFFIX})
-        FIND_PACKAGE(PythonInterp 3)
-        FIND_PACKAGE(PythonLibs 3 REQUIRED)
+        find_package(Boost COMPONENTS log log_setup thread python${PYTHON_VERSION_SUFFIX} REQUIRED)
+        find_package(PythonInterp 3)
+        find_package(PythonLibs 3 REQUIRED)
     else()
-        FIND_PACKAGE(Boost COMPONENTS python)
-        FIND_PACKAGE(PythonInterp)
-        FIND_PACKAGE(PythonLibs REQUIRED)
+        find_package(Boost COMPONENTS log log_setup thread python REQUIRED)
+        find_package(PythonInterp)
+        find_package(PythonLibs REQUIRED)
     endif()
   else()
     if (PYTHON_VERSION_MAJOR EQUAL 3)
-        FIND_PACKAGE(Boost COMPONENTS python${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR})
-        FIND_PACKAGE(PythonInterp 3)
-        FIND_PACKAGE(PythonLibs 3 REQUIRED)
+        find_package(Boost COMPONENTS log log_setup thread python${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR} REQUIRED)
+        find_package(PythonInterp 3)
+        find_package(PythonLibs 3 REQUIRED)
     else()
-        FIND_PACKAGE(Boost COMPONENTS python${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR})
-        FIND_PACKAGE(PythonInterp)
-        FIND_PACKAGE(PythonLibs REQUIRED)
+        find_package(Boost COMPONENTS log log_setup thread python${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR} REQUIRED)
+        find_package(PythonInterp)
+        find_package(PythonLibs REQUIRED)
     endif()
   endif()
 else()
     message("Python not found")
 endif()
+
 
 if(MSVC)
     add_definitions(-DBOOST_PYTHON_STATIC_LIB)
@@ -85,6 +91,29 @@ message(STATUS "PYTHON_LIBRARIES = ${PYTHON_LIBRARIES}")
 message(STATUS "PYTHON_EXECUTABLE = ${PYTHON_EXECUTABLE}")
 message(STATUS "PYTHON_INCLUDE_DIRS = ${PYTHON_INCLUDE_DIRS}")
 message(STATUS "Boost_LIBRARIES = ${Boost_LIBRARIES}")
+message(STATUS "BOOST_LIBRARYDIR = ${BOOST_LIBRARYDIR}")
+
+# Plugin modules
+set(MCMODCRAFTER_PLUGIN_HEADERS
+    src/pyplugin/PyLogger.h
+)
+set(MCMODCRAFTER_PLUGIN_SOURCES
+    src/pyplugin/PyLogger.cpp
+)
+
+# python_add_module(mcmod
+#     ${MCMODCRAFTER_PLUGIN_HEADERS}
+#     ${MCMODCRAFTER_PLUGIN_SOURCES}
+# )
+# add_library(mcmod SHARED
+#     ${MCMODCRAFTER_PLUGIN_HEADERS}
+#     ${MCMODCRAFTER_PLUGIN_SOURCES}
+# )
+# target_link_libraries(mcmod
+#     ${Boost_LIBRARIES}
+#     ${PYTHON_LIBRARIES}
+#     glog::glog
+# )
 
 # Source definitions
 set(MCMODCRAFTER_HEADERS
@@ -135,6 +164,8 @@ add_executable(frontend
     ${MCMODCRAFTER_SOURCES}
     ${MCMODCRAFTER_UI_HEADERS}
     ${MCMODCRAFTER_QRC_SOURCES}
+    ${MCMODCRAFTER_PLUGIN_HEADERS}
+    ${MCMODCRAFTER_PLUGIN_SOURCES}
 )
 
 target_link_libraries(frontend
@@ -144,6 +175,7 @@ target_link_libraries(frontend
     ${Boost_LIBRARIES}
     ${PYTHON_LIBRARIES}
 )
+
 message(STATUS "${Boost_LIBRARIES}")
 
 include_directories(
@@ -183,3 +215,7 @@ endif(WIN32)
 if(MSVC)
     set(CMAKE_CXX_FLAGS "/D_WIN32_WINNT=0x0600 /MP /EHsc")
 endif()
+
+# Definitions
+add_definitions(-DBOOST_PYTHON_STATIC_MODULE)
+add_definitions(-DBOOST_PYTHON_STATIC_LIB)
