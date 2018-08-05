@@ -23,6 +23,7 @@
 #include <QtWidgets/QApplication>
 #include "RuntimeConfig.h"
 #include <pyplugin/PyLogger.h>
+#include <pyplugin/PluginManager.h>
 
 #if PY_MAJOR_VERSION >= 3
 #   define INIT_MCMOD_MODULE PyInit_mcmod
@@ -66,6 +67,18 @@ int main(int argc, char *argv[])
     namespace bp = boost::python;
     bp::object sys = bp::import("sys");
     sys.attr("path").attr("append")(std::string(pypathc));
+
+    // attempting to load plugins
+    try
+    {
+        bp::import("pluginscan");
+    }
+    catch(bp::error_already_set &)
+    {
+        PyErr_Print();
+        PyErr_Clear();
+        L_WARN("Failed to load plugins.");
+    }
     
     // running application
     L_INFO("Initializing MCModCrafter...");
@@ -79,6 +92,7 @@ int main(int argc, char *argv[])
 
     int res = a.exec();
     
+    PluginManager::DestroyInstance();
     Py_Finalize();
     delete[] pypathc;
 }

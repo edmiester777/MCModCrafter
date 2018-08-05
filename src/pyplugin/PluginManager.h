@@ -24,23 +24,37 @@
 #include "PyPlugin.h"
 #include <QHash>
 #include <QList>
+#include <functional>
+
+using namespace std;
 
 typedef shared_ptr<PyPlugin> PluginRef;
 typedef QList<PluginRef> PluginList;
 typedef QHash<QString, PluginList> PluginMap;
 
+typedef function<void(PluginRef plugin, int current, int total)> CurrentPluginUpdatedCallback;
+typedef function<void(bool success)> FinishedExecutingPluginCallback;
+
 class PluginManager
 {
 public:
     static PluginManager* Instance();
+    static void DestroyInstance();
     static void RegisterPlugin(PluginRef plugin);
     
     PluginManager();
     ~PluginManager() = default;
     
-    void RegisterPluginInternal(PluginRef plugin);
+    void registerPlugin(PluginRef plugin);
+    void executePluginsForHook(
+        QString hook,
+        CurrentPluginUpdatedCallback updateCB,
+        FinishedExecutingPluginCallback finishedCB
+    );
     
 private:
+    PluginList getPluginsForHook(QString hook);
+
     PluginMap m_mapper;
 };
 

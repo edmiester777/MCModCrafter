@@ -210,6 +210,7 @@ message(${CMAKE_C_FLAGS_DEBUG})
 
 # Configuring scripts
 set(MCMODCRAFTER_SCRIPTS
+    "pluginscan.py"
     "mcmodplugin/__init__.py"
     "mcmodplugin/create_project_download_forge.py"
 )

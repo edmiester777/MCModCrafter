@@ -23,13 +23,23 @@
 
 PluginManager* PluginManager::Instance()
 {
-    static PluginManager instance = PluginManager();
-    return &instance;
+    static PluginManager* instance = nullptr;
+    if(instance == nullptr)
+    {
+        instance = new PluginManager();
+    }
+    return instance;
+}
+
+void PluginManager::DestroyInstance()
+{
+    L_INFO("Destroying managed plugins...");
+    delete PluginManager::Instance();
 }
 
 void PluginManager::RegisterPlugin(PluginRef plugin)
 {
-    PluginManager::Instance()->RegisterPluginInternal(plugin);
+    PluginManager::Instance()->registerPlugin(plugin);
 }
 
 PluginManager::PluginManager()
@@ -37,7 +47,7 @@ PluginManager::PluginManager()
     
 }
 
-void PluginManager::RegisterPluginInternal(PluginRef plugin)
+void PluginManager::registerPlugin(PluginRef plugin)
 {
     // making sure the plugin hook exists
     QString hook = QString::fromStdString(plugin->getHook());
@@ -72,4 +82,35 @@ void PluginManager::RegisterPluginInternal(PluginRef plugin)
             .arg(QString::fromStdString(plugin->getName()), hook)
         );
     }
+}
+
+void PluginManager::executePluginsForHook(QString hook, CurrentPluginUpdatedCallback updateCB, FinishedExecutingPluginCallback finishedCB)
+{
+    PluginList plugins = getPluginsForHook(hook);
+    if(plugins.empty())
+    {
+        L_WARN(QString("No plugins exist for this hook: %1").arg(hook));
+        return;
+    }
+
+    for(int i = 0; i < plugins.length(); ++i)
+    {
+        if(updateCB) updateCB(plugins[i], i, plugins.length());
+        if(!plugins[i]->execHook())
+        {
+            if(finishedCB) finishedCB(false);
+            return;
+        }
+    }
+
+    if(finishedCB) finishedCB(true);
+}
+
+PluginList PluginManager::getPluginsForHook(QString hook)
+{
+    if(m_mapper.contains(hook))
+    {
+        return m_mapper[hook];
+    }
+    return PluginList();
 }
