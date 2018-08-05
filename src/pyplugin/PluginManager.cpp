@@ -27,20 +27,49 @@ PluginManager* PluginManager::Instance()
     return &instance;
 }
 
-void PluginManager::RegisterPlugin(PyPlugin plugin)
+void PluginManager::RegisterPlugin(PluginRef plugin)
 {
-    // making sure the plugin hook exists
-    if(RuntimeConfig::Instance()->AvailableHooks().contains(QString::fromStdString(plugin.getHook())))
-    {
-        
-    }
-    else
-    {
-        L_ERROR(QString("Failed to register plugin \"%1\" for reason: Empty or invalid hook identifier"));
-    }
+    PluginManager::Instance()->RegisterPluginInternal(plugin);
 }
 
 PluginManager::PluginManager()
 {
     
+}
+
+void PluginManager::RegisterPluginInternal(PluginRef plugin)
+{
+    // making sure the plugin hook exists
+    QString hook = QString::fromStdString(plugin->getHook());
+    if(RuntimeConfig::Instance()->AvailableHooks().contains(hook))
+    {   
+        // checking if we already have a list registered to this hook
+        if(!m_mapper.contains(hook))
+        {
+            m_mapper[hook] = PluginList();
+        }
+        
+        // @TODO Add extra validation to ensure plugin has been set up correctly.
+        
+        // sorting plugins in order...
+        PluginList &pluglist = m_mapper[hook];
+        PluginList::iterator iter = pluglist.begin();
+        while(iter != pluglist.end())
+        {
+            if(plugin->getOrder() >= (*iter)->getOrder())
+            {
+                break;
+            }
+            ++iter;
+        }
+        pluglist.insert(iter, plugin);
+        L_INFO(QString("Registered plugin: %1").arg(QString::fromStdString(plugin->getName())));
+    }
+    else
+    {
+        L_ERROR(
+            QString("Failed to register plugin \"%1\" for reason: Empty or invalid hook identifier. Hook: \"%2\"")
+            .arg(QString::fromStdString(plugin->getName()), hook)
+        );
+    }
 }

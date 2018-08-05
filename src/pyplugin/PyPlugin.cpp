@@ -22,7 +22,8 @@
 
 PyPlugin::PyPlugin(string hook, int order)
 {
-    
+    setHook(hook);
+    setOrder(order);
     m_name = "unknown";
     m_logger = PyLogger(m_name);
 }

@@ -18,13 +18,13 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #########################################################################
 
-from mcmod import Plugin
+from mcmod import Plugin, register_plugin
 
 class CreateProjectDownloadForge(Plugin):
     def __init__(self):
         Plugin.__init__(self, "mcmod.createproject.setup", 0)
         self.name = "CreateProjectDownloadForge"
-        self.description = "Plugin to handle the first stage of creating a project. " +
+        self.description = "Plugin to handle the first stage of creating a project. "\
             "This will download minecraft forge to the project directory."
         self.author = "edmiester777"
         self.version = "0.0.1"
@@ -32,3 +32,6 @@ class CreateProjectDownloadForge(Plugin):
 
     def exec_hook():
         return True
+
+# Registering this plugin...
+register_plugin(CreateProjectDownloadForge())

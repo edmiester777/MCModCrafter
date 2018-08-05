@@ -35,7 +35,7 @@ BOOST_PYTHON_MODULE(mcmod)
     .def("error", &PyLogger::Error)
     .def("fatal", &PyLogger::Fatal);
     
-    bp::class_<PyPluginWrapper, boost::noncopyable>("Plugin", bp::init<string>())
+    bp::class_<PyPluginWrapper, PluginRef>("Plugin", bp::init<string>())
     .def(bp::init<string, int>())
     .add_property("name", &PyPluginWrapper::getName, &PyPluginWrapper::setName)
     .add_property("description", &PyPluginWrapper::getDescription, &PyPluginWrapper::setDescription)

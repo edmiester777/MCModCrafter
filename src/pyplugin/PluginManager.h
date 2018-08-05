@@ -25,17 +25,23 @@
 #include <QHash>
 #include <QList>
 
+typedef shared_ptr<PyPlugin> PluginRef;
+typedef QList<PluginRef> PluginList;
+typedef QHash<QString, PluginList> PluginMap;
+
 class PluginManager
 {
 public:
     static PluginManager* Instance();
-    static void RegisterPlugin(PyPlugin plugin);
+    static void RegisterPlugin(PluginRef plugin);
     
     PluginManager();
     ~PluginManager() = default;
     
+    void RegisterPluginInternal(PluginRef plugin);
+    
 private:
-    QHash<QString, QList<PyPlugin>> m_mapper;
+    PluginMap m_mapper;
 };
 
 #endif // !__PLUGINMANAGER_H__

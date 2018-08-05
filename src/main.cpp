@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
     CreateDirIfNotExists(RuntimeConfig::Instance()->GetProjectsDirectory());
     CreateDirIfNotExists(RuntimeConfig::Instance()->GetDownloadsDirectory());
     
-    PyImport_AppendInittab("mcmodinternal", INIT_MCMOD_MODULE);
+    PyImport_AppendInittab("mcmod", INIT_MCMOD_MODULE);
     Py_SetProgramName(pypathc);
     Py_Initialize();
     
