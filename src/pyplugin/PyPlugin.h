@@ -87,6 +87,7 @@ public:
         {
             if(override func = get_override("exec_hook"))
             {
+                getLogger().Info((char *)"Calling exec_hook()...");
                 return func();
             }
             return PyPlugin::execHook();

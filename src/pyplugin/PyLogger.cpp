@@ -69,30 +69,30 @@ void PyLogger::Init()
 
 void PyLogger::Debug(const char *text)
 {
-    QString t = "[Plugin][" + QString::fromStdString(m_name) + "] " + text;
+    QString t = "\b[Plugin][" + QString::fromStdString(m_name) + "] " + text;
     L_DEBUG(t);
 }
 
 void PyLogger::Info(const char *text)
 {
-    QString t = "[Plugin][" + QString::fromStdString(m_name) + "] " + text;
+    QString t = "\b[Plugin][" + QString::fromStdString(m_name) + "] " + text;
     L_INFO(t);
 }
 
 void PyLogger::Warn(const char *text)
 {
-    QString t = "[Plugin][" + QString::fromStdString(m_name) + "] " + text;
+    QString t = "\b[Plugin][" + QString::fromStdString(m_name) + "] " + text;
     L_WARN(text);
 }
 
 void PyLogger::Error(const char *text)
 {
-    QString t = "[Plugin][" + QString::fromStdString(m_name) + "] " + text;
+    QString t = "\b[Plugin][" + QString::fromStdString(m_name) + "] " + text;
     L_ERROR(t);
 }
 
 void PyLogger::Fatal(const char *text)
 {
-    QString t = "[Plugin][" + QString::fromStdString(m_name) + "] " + text;
+    QString t = "\b[Plugin][" + QString::fromStdString(m_name) + "] " + text;
     L_FATAL(t);
 }
