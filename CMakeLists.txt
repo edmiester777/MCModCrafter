@@ -93,28 +93,6 @@ message(STATUS "PYTHON_INCLUDE_DIRS = ${PYTHON_INCLUDE_DIRS}")
 message(STATUS "Boost_LIBRARIES = ${Boost_LIBRARIES}")
 message(STATUS "BOOST_LIBRARYDIR = ${BOOST_LIBRARYDIR}")
 
-# Plugin modules
-set(MCMODCRAFTER_PLUGIN_HEADERS
-    src/pyplugin/PyLogger.h
-)
-set(MCMODCRAFTER_PLUGIN_SOURCES
-    src/pyplugin/PyLogger.cpp
-)
-
-# python_add_module(mcmod
-#     ${MCMODCRAFTER_PLUGIN_HEADERS}
-#     ${MCMODCRAFTER_PLUGIN_SOURCES}
-# )
-# add_library(mcmod SHARED
-#     ${MCMODCRAFTER_PLUGIN_HEADERS}
-#     ${MCMODCRAFTER_PLUGIN_SOURCES}
-# )
-# target_link_libraries(mcmod
-#     ${Boost_LIBRARIES}
-#     ${PYTHON_LIBRARIES}
-#     glog::glog
-# )
-
 # Source definitions
 set(MCMODCRAFTER_HEADERS
     src/stdafx.h
@@ -126,6 +104,11 @@ set(MCMODCRAFTER_HEADERS
     src/ui/WindowMCModCrafter.h
     src/ui/WidgetSelectProject.h
     src/ui/DialogCreateProject.h
+
+    # Plugin modules
+    src/pyplugin/PluginManager.h
+    src/pyplugin/PyPlugin.h
+    src/pyplugin/PyLogger.h
 
     # third party
     third_party/SimpleQtLogger/simpleQtLogger.h
@@ -141,6 +124,12 @@ set(MCMODCRAFTER_SOURCES
     src/ui/WindowMCModCrafter.cpp
     src/ui/WidgetSelectProject.cpp
     src/ui/DialogCreateProject.cpp
+
+    # Plugin modules
+    src/pyplugin/MCModInternalModule.cpp
+    src/pyplugin/PluginManager.cpp
+    src/pyplugin/PyPlugin.cpp
+    src/pyplugin/PyLogger.cpp
 
     # third party
     third_party/SimpleQtLogger/simpleQtLogger.cpp
@@ -164,8 +153,6 @@ add_executable(frontend
     ${MCMODCRAFTER_SOURCES}
     ${MCMODCRAFTER_UI_HEADERS}
     ${MCMODCRAFTER_QRC_SOURCES}
-    ${MCMODCRAFTER_PLUGIN_HEADERS}
-    ${MCMODCRAFTER_PLUGIN_SOURCES}
 )
 
 target_link_libraries(frontend
@@ -218,11 +205,13 @@ endif()
 
 # Definitions
 add_definitions(-DBOOST_PYTHON_STATIC_MODULE -DBOOST_PYTHON_STATIC_LIB)
+set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DDEBUG")
+message(${CMAKE_C_FLAGS_DEBUG})
 
 # Configuring scripts
 set(MCMODCRAFTER_SCRIPTS
-    "mcmod/__init__.py"
-    "mcmod/logger.py"
+    "mcmodplugin/__init__.py"
+    "mcmodplugin/create_project_download_forge.py"
 )
 foreach(SCRIPT ${MCMODCRAFTER_SCRIPTS})
     message(STATUS "Configuring ${SCRIPT}...")

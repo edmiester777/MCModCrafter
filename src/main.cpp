@@ -25,11 +25,11 @@
 #include <pyplugin/PyLogger.h>
 
 #if PY_MAJOR_VERSION >= 3
-#   define INIT_MCMODINTERNAL_MODULE PyInit_mcmodinternal
-extern "C" PyObject* INIT_MCMODINTERNAL_MODULE();
+#   define INIT_MCMOD_MODULE PyInit_mcmod
+extern "C" PyObject* INIT_MCMOD_MODULE();
 #else
-#   define INIT_MCMODINTERNAL_MODULE initmcmodinternal
-extern "C" void INIT_MCMODINTERNAL_MODULE();
+#   define INIT_MCMOD_MODULE initmcmod
+extern "C" void INIT_MCMOD_MODULE();
 #endif
 
 void CreateDirIfNotExists(QString dir)
@@ -57,33 +57,27 @@ int main(int argc, char *argv[])
     CreateDirIfNotExists(RuntimeConfig::Instance()->GetProjectsDirectory());
     CreateDirIfNotExists(RuntimeConfig::Instance()->GetDownloadsDirectory());
     
-    PyImport_AppendInittab("mcmodinternal", INIT_MCMODINTERNAL_MODULE);
+    PyImport_AppendInittab("mcmodinternal", INIT_MCMOD_MODULE);
     Py_SetProgramName(pypathc);
     Py_Initialize();
     
     // adding current directory to module...
     L_DEBUG("Adding scripts to interpreter path...");
     namespace bp = boost::python;
-    try
-    {
-        bp::object sys = bp::import("sys");
-        sys.attr("path").attr("append")(std::string(pypathc));
-    }
-    catch(bp::error_already_set &)
-    {
-        PyErr_Print();
-        PyErr_Clear();
-    }
+    bp::object sys = bp::import("sys");
+    sys.attr("path").attr("append")(std::string(pypathc));
     
     // running application
     L_INFO("Initializing MCModCrafter...");
     MCModCrafter w;
     w.show();
-    return a.exec();
-    
-#if DEBUG
+
+#ifdef DEBUG
+    L_DEBUG("Starting interactive interpreter...");
     Py_Main(argc, argv);
 #endif // DEBUG
+
+    int res = a.exec();
     
     Py_Finalize();
     delete[] pypathc;

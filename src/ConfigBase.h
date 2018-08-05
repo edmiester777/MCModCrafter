@@ -79,7 +79,7 @@ typedef QMap<QString, QJsonArray> JsonArrayMemberMap;
 #define CONFIG_ARRAY_PROPERTY(type, name, getterFunc) \
     private: QJsonArray* ___m_donotaccess_##name = AddArrayMember(#name); \
     public: void Add##name(type value) { m_arrays[#name].append(value); } \
-    public: QVector<type> ##name##s()const \
+    public: QVector<type> name()const \
     { \
         QVector<type> vec; \
         QJsonArray arr = m_arrays[#name]; \
@@ -87,15 +87,15 @@ typedef QMap<QString, QJsonArray> JsonArrayMemberMap;
             iter != arr.end(); \
             ++iter) \
         { \
-            vec.push_back((*iter).##getterFunc()); \
+            vec.push_back((*iter).getterFunc()); \
         } \
         return vec; \
     }
 
-#define CONFIG_STRING_ARRAY_PROPERTY(name) CONFIG_ARRAY_PROPERTY(QString, ##name, toString)
-#define CONFIG_BOOL_ARRAY_PROPERTY(name) CONFIG_ARRAY_PROPERTY(bool, ##name, toBool)
-#define CONFIG_INT_ARRAY_PROPERTY(name) CONFIG_ARRAY_PROPERTY(int, ##name, toInt)
-#define CONFIG_DOUBLE_ARRAY_PROPERTY(name) CONFIG_ARRAY_PROPERTY(double, ##name, toDouble)
+#define CONFIG_STRING_ARRAY_PROPERTY(name) CONFIG_ARRAY_PROPERTY(QString, name, toString)
+#define CONFIG_BOOL_ARRAY_PROPERTY(name) CONFIG_ARRAY_PROPERTY(bool, name, toBool)
+#define CONFIG_INT_ARRAY_PROPERTY(name) CONFIG_ARRAY_PROPERTY(int, name, toInt)
+#define CONFIG_DOUBLE_ARRAY_PROPERTY(name) CONFIG_ARRAY_PROPERTY(double, name, toDouble)
 
 /**
  * Use this when defining an array of object types. These objects must all be of the same

@@ -22,6 +22,8 @@
 
 #include <stdafx.h>
 
+using namespace std;
+
 /**
  * @brief Python bridge for logging.
  *
@@ -38,7 +40,7 @@ public:
      *
      * @param Name of plugin that is speaking.
      */
-    PyLogger(const char* name);
+    PyLogger(string name = "unknown");
 
     /**
      * @brief Initialize the internal logger.

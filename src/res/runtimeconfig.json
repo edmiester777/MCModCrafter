@@ -3,5 +3,8 @@
     "ProjectsDirectory": "projects",
     "DownloadsDirectory": "downloads",
     "ProjectConfigName": "project.modproj",
-    "MinecraftForgeUrl": "http://files.minecraftforge.net/maven/net/minecraftforge/forge/1.12.2-14.23.1.2578/forge-1.12.2-14.23.1.2578-mdk.zip"
+    "MinecraftForgeUrl": "http://files.minecraftforge.net/maven/net/minecraftforge/forge/1.12.2-14.23.1.2578/forge-1.12.2-14.23.1.2578-mdk.zip",
+    "AvailableHooks": [
+        "mcmod.createproject.setup"
+    ]
 }

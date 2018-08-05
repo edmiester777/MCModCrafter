@@ -31,7 +31,6 @@ public:
     MCModCrafter(QWidget *parent = Q_NULLPTR);
 
     void SetContent(QWidget* content);
-
 private:
     Ui::WindowMCModCrafter m_ui;
     QWidget* m_content;

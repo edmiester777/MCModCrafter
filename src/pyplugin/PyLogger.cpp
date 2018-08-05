@@ -25,7 +25,7 @@
 // @TODO: Update when better formats are allowed.
 #define LOG_FMT "[<TS>][<TID>][<LL>][<FUNC>:<LINE>] <TEXT>"
 
-PyLogger::PyLogger(const char* name)
+PyLogger::PyLogger(string name)
 {
     m_name = name;
 }
@@ -96,19 +96,3 @@ void PyLogger::Fatal(const char *text)
     QString t = "[Plugin][" + QString::fromStdString(m_name) + "] " + text;
     L_FATAL(t);
 }
-
-BOOST_PYTHON_MODULE(mcmodinternal)
-{
-    namespace bp = boost::python;
-    
-    // initializing logger...
-    PyLogger::Init();
-    
-    // exporting the bridge logger
-    bp::class_<PyLogger>("Logger", bp::init<const char*>())
-    .def("debug", &PyLogger::Debug)
-    .def("info", &PyLogger::Info)
-    .def("warn", &PyLogger::Warn)
-    .def("error", &PyLogger::Error)
-    .def("fatal", &PyLogger::Fatal);
-};
