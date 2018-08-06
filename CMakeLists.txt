@@ -212,7 +212,8 @@ message(${CMAKE_C_FLAGS_DEBUG})
 set(MCMODCRAFTER_SCRIPTS
     "pluginscan.py"
     "mcmodplugin/__init__.py"
-    "mcmodplugin/create_project_download_forge.py"
+    "mcmodplugin/create_project/__init__.py"
+    "mcmodplugin/create_project/download_forge.py"
 )
 foreach(SCRIPT ${MCMODCRAFTER_SCRIPTS})
     message(STATUS "Configuring ${SCRIPT}...")
