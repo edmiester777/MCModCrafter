@@ -35,8 +35,9 @@ typedef QHash<QString, PluginList> PluginMap;
 typedef function<void(PluginRef plugin, int current, int total)> CurrentPluginUpdatedCallback;
 typedef function<void(bool success)> FinishedExecutingPluginCallback;
 
-class PluginManager
+class PluginManager : public QObject
 {
+    Q_OBJECT
 public:
     static PluginManager* Instance();
     static void DestroyInstance();
@@ -52,6 +53,10 @@ public:
         CurrentPluginUpdatedCallback updateCB,
         FinishedExecutingPluginCallback finishedCB
     );
+    
+signals:
+    void ExecutingHook(QString hook, PluginRef plugin, int current, int total);
+    void ExecutingFinished(bool success);
     
 private:
     PluginList getPluginsForHook(QString hook);

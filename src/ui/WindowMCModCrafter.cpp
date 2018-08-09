@@ -29,6 +29,19 @@ MCModCrafter::MCModCrafter(QWidget *parent)
     m_content = nullptr;
 
     SetContent(new WidgetSelectProject);
+    connect(
+            PluginManager::Instance(),
+            SIGNAL(ExecutingHook(QString, PluginRef, int, int)),
+            this,
+            SLOT(PluginExecuted(QString, PluginRef, int, int))
+    );
+    connect(
+        PluginManager::Instance(),
+        SIGNAL(ExecutingFinished(bool)),
+        this,
+        SLOT(PluginExecutionFinished(bool))
+    );
+    PluginManager::Instance()->executePluginsForHook("mcmod.createproject.setup", boost::python::dict(), nullptr, nullptr);
 }
 
 void MCModCrafter::SetContent(QWidget* content)
@@ -41,4 +54,24 @@ void MCModCrafter::SetContent(QWidget* content)
     QVBoxLayout *layout = new QVBoxLayout;
     layout->addWidget(m_content);
     m_ui.centralWidget->setLayout(layout);
+}
+
+void MCModCrafter::PluginExecuted(QString hook, PluginRef plugin, int current, int total)
+{
+    QString format = "Calling hook \"%1\"... %2(%3/%4)";
+    QString message = format.arg(
+        hook,
+        QString::fromStdString(plugin->getName()),
+        QString::number(current),
+        QString::number(total)
+    );
+    statusBar()->showMessage(message);
+}
+
+void MCModCrafter::PluginExecutionFinished(bool success)
+{
+    if(!success)
+        statusBar()->showMessage("One or more errors occurred while executing hook.");
+    else
+        statusBar()->showMessage("");
 }

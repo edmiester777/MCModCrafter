@@ -23,6 +23,7 @@
 
 #include <QtWidgets/QMainWindow>
 #include <ui_WindowMCModCrafter.h>
+#include <pyplugin/PluginManager.h>
 
 class MCModCrafter : public QMainWindow
 {
@@ -31,6 +32,11 @@ public:
     MCModCrafter(QWidget *parent = Q_NULLPTR);
 
     void SetContent(QWidget* content);
+    
+public slots:
+    void PluginExecuted(QString hook, PluginRef plugin, int current, int total);
+    void PluginExecutionFinished(bool success);
+    
 private:
     Ui::WindowMCModCrafter m_ui;
     QWidget* m_content;

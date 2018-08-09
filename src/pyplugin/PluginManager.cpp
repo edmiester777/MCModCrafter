@@ -86,7 +86,7 @@ void PluginManager::registerPlugin(PluginRef plugin)
     }
 }
 
-void PluginManager::executePluginsForHook(QString hook, dict args, CurrentPluginUpdatedCallback updateCB, FinishedExecutingPluginCallback finishedCB)
+void PluginManager::executePluginsForHook(QString hook, dict kwargs, CurrentPluginUpdatedCallback updateCB, FinishedExecutingPluginCallback finishedCB)
 {
     PluginList plugins = getPluginsForHook(hook);
     if(plugins.empty())
@@ -97,15 +97,18 @@ void PluginManager::executePluginsForHook(QString hook, dict args, CurrentPlugin
 
     for(int i = 0; i < plugins.length(); ++i)
     {
-        if(updateCB) updateCB(plugins[i], i, plugins.length());
-        if(!plugins[i]->execHook(args))
+        emit ExecutingHook(hook, plugins[i], i + 1, plugins.length());
+        if(updateCB) updateCB(plugins[i], i + 1, plugins.length());
+        if(!plugins[i]->execHook(kwargs))
         {
             if(finishedCB) finishedCB(false);
+            emit ExecutingFinished(false);
             return;
         }
     }
 
     if(finishedCB) finishedCB(true);
+    emit ExecutingFinished(true);
 }
 
 PluginList PluginManager::getPluginsForHook(QString hook)

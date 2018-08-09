@@ -30,7 +30,7 @@ class CreateProjectDownloadForge(Plugin):
         self.version = "0.0.1"
         self.status_text = "Downloading Minecraft Forge..."
 
-    def exec_hook():
+    def exec_hook(*args, **kwargs):
         return True
 
 # Registering this plugin...

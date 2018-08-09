@@ -35,7 +35,7 @@ BOOST_PYTHON_MODULE(mcmod)
     .def("error", &PyLogger::Error)
     .def("fatal", &PyLogger::Fatal);
     
-    bp::class_<PyPluginWrapper, PluginRef>("Plugin", bp::init<string>())
+    bp::class_<PyPluginWrapper, boost::noncopyable>("Plugin", bp::init<string>())
     .def(bp::init<string, int>())
     .add_property("name", &PyPluginWrapper::getName, &PyPluginWrapper::setName)
     .add_property("description", &PyPluginWrapper::getDescription, &PyPluginWrapper::setDescription)
@@ -43,7 +43,7 @@ BOOST_PYTHON_MODULE(mcmod)
     .add_property("version", &PyPluginWrapper::getVersion, &PyPluginWrapper::setVersion)
     .add_property("status_text", &PyPluginWrapper::getStatusText, &PyPluginWrapper::setStatusText)
     .add_property("logger", &PyPluginWrapper::getLogger)
-    .def("exec_hook", &PyPluginWrapper::execHook);
+    .def("exec_hook", bp::pure_virtual(&PyPluginWrapper::execHook));
     
     bp::def("register_plugin", &PluginManager::RegisterPlugin);
 }

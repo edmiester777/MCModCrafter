@@ -62,10 +62,10 @@ public:
     /**
      * This is the plugin functionality that will be executed.
      *
-     * @param args Dict of **kwargs to be set on execution.
+     * @param kwargs Dict of **kwargs to be set on execution.
      * @return True if execution of other plugins should continue, else false.
      */
-    virtual bool execHook(dict args);
+    virtual bool execHook(dict kwargs);
     
 private:
     PyLogger m_logger;
@@ -82,20 +82,25 @@ class PyPluginWrapper : public PyPlugin, public wrapper<PyPlugin>
 {
 public:
     PyPluginWrapper(string hook, int order = DEFAULT_PLUGIN_ORDER) : PyPlugin(hook, order) {}
-    virtual bool execHook(dict args) override
+    virtual bool execHook(dict kwargs) override
     {
+        namespace bp = boost::python;
         try
         {
-            if(override func = get_override("exec_hook"))
+            object func = get_override("exec_hook");
+            if(func)
             {
                 getLogger().Info((char *)"Calling exec_hook()...");
-                return func(**args);
+                bool res = func(*bp::tuple(), **kwargs);
+                getLogger().Info((char *)"Finished executing exec_hook()");
+                return res;
             }
-            return PyPlugin::execHook(args);
+            return PyPlugin::execHook(kwargs);
         }
         catch(error_already_set &)
         {
             PyErr_Print();
+            PyErr_Clear();
             getLogger().Error("Failed to execute method \"exec_hook()\".");
         }
         return false;
