@@ -135,8 +135,6 @@ bool ConfigBase::Load(QString path)
                 text += line;
             }
 
-            L_DEBUG(text);
-
             QJsonParseError err;
             QJsonDocument doc = QJsonDocument::fromJson(text.toUtf8(), &err);
             if(doc.isNull() || doc.isEmpty() || !doc.isObject())
