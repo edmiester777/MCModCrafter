@@ -5,6 +5,10 @@
     "ProjectConfigName": "project.modproj",
     "MinecraftForgeUrl": "http://files.minecraftforge.net/maven/net/minecraftforge/forge/1.12.2-14.23.1.2578/forge-1.12.2-14.23.1.2578-mdk.zip",
     "AvailableHooks": [
+        // This is executed when a project is flagged to set up.
+        //
+        // Passed arguments:
+        //    * dir - New project directory.
         "mcmod.createproject.setup"
     ]
 }

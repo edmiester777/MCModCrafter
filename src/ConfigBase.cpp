@@ -20,6 +20,8 @@
 
 #include <stdafx.h>
 #include "ConfigBase.h"
+#include <QTextStream>
+#include <QRegExp>
 
 ConfigBase::ConfigBase()
     : QObject(nullptr)
@@ -113,9 +115,30 @@ bool ConfigBase::Load(QString path)
     {
         if(file.open(QIODevice::ReadOnly))
         {
-            QByteArray bytes = file.readAll();
+            // reading file
+            QTextStream stream(&file);
+            QString text;
+
+            // removing comments
+            while(!stream.atEnd())
+            {
+                QString line = stream.readLine();
+                QRegExp exp("\\s{0,}\\/\\/(.*)");
+                if(exp.exactMatch(line))
+                {
+                    line = "";
+                }
+                else
+                {
+                    line = line + "\n";
+                }
+                text += line;
+            }
+
+            L_DEBUG(text);
+
             QJsonParseError err;
-            QJsonDocument doc = QJsonDocument::fromJson(bytes, &err);
+            QJsonDocument doc = QJsonDocument::fromJson(text.toUtf8(), &err);
             if(doc.isNull() || doc.isEmpty() || !doc.isObject())
             {
                 L_WARN(

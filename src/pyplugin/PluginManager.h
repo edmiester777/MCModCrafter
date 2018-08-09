@@ -48,6 +48,7 @@ public:
     void registerPlugin(PluginRef plugin);
     void executePluginsForHook(
         QString hook,
+        boost::python::dict args,
         CurrentPluginUpdatedCallback updateCB,
         FinishedExecutingPluginCallback finishedCB
     );

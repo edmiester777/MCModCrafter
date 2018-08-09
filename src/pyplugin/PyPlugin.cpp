@@ -107,7 +107,7 @@ PyLogger PyPlugin::getLogger()
 }
 
 // PLUGIN OVERRIDES
-bool PyPlugin::execHook()
+bool PyPlugin::execHook(dict args)
 {
     getLogger().Warn("Executing default exec_hook() method... Did you forget to override this?");
     return false;

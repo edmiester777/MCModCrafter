@@ -62,9 +62,10 @@ public:
     /**
      * This is the plugin functionality that will be executed.
      *
+     * @param args Dict of **kwargs to be set on execution.
      * @return True if execution of other plugins should continue, else false.
      */
-    virtual bool execHook();
+    virtual bool execHook(dict args);
     
 private:
     PyLogger m_logger;
@@ -81,16 +82,16 @@ class PyPluginWrapper : public PyPlugin, public wrapper<PyPlugin>
 {
 public:
     PyPluginWrapper(string hook, int order = DEFAULT_PLUGIN_ORDER) : PyPlugin(hook, order) {}
-    virtual bool execHook() override
+    virtual bool execHook(dict args) override
     {
         try
         {
             if(override func = get_override("exec_hook"))
             {
                 getLogger().Info((char *)"Calling exec_hook()...");
-                return func();
+                return func(**args);
             }
-            return PyPlugin::execHook();
+            return PyPlugin::execHook(args);
         }
         catch(error_already_set &)
         {
