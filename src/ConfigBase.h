@@ -22,13 +22,35 @@
 #define __CONFIGBASE_H__
 
 #include "stdafx.h"
+#include <functional>
 
 class ConfigBase;
 
 /**
+ * Definition of a funciton pointing to a members generated python getter
+ */
+typedef std::function<boost::python::object()> MemberPythonGetter;
+
+/**
+ * Definition of a function pointing to an array members generated
+ * python getter.
+ */
+typedef std::function<boost::python::list()> ArrayPythonGetter;
+
+/**
+ * Definition of a member pair.
+ */
+typedef QPair<QJsonValue, MemberPythonGetter> Member;
+
+/**
+ * Definition of an array member pair.
+ */
+typedef QPair<QJsonArray, ArrayPythonGetter> Array;
+
+/**
  * Definition for a list of json values for shorthand use later.
  */
-typedef QMap<QString, QJsonValue> JsonValueMemberMap;
+typedef QMap<QString, Member> JsonValueMemberMap;
 
 /**
  * Definition for object members.
@@ -43,20 +65,26 @@ typedef QMap<QString, QJsonArray> JsonArrayMemberMap;
 /**
  * Macro to define a config property in the config standard.
  *
- * @param cls Class that you are adding this property to.
  * @param type Type of object being declared.
  * @param name Name (non-string) for object.
  * @param getterFunc Function used on QVariant used to get correct value.
+ * @param toPythonFunc Function that will be used to convert the QVariant to a boost::python::object
  */
-#define CONFIG_PROPERTY(type, name, getterFunc) \
-    private: QJsonValue* ___m_donotaccess_##name = AddMember(#name); \
-    public: void Set##name(type value) { m_values[#name] = QJsonValue::fromVariant(value); } \
-    public: type Get##name()const { return m_values[#name].getterFunc(); }
+#define CONFIG_PROPERTY(type, name, getterFunc, toPythonFunc) \
+    public: void Set##name(type value) { m_values[#name].first = QJsonValue::fromVariant(value); } \
+    public: type Get##name()const { return m_values[#name].first.getterFunc(); } \
+    private: boost::python::object GetPython##name()const { return boost::python::object(m_values[#name].first.toPythonFunc()); } \
+    private: QJsonValue* ___m_donotaccess_##name = AddMember( \
+        #name, \
+        [this]() -> boost::python::object { \
+            return this->GetPython##name(); \
+        } \
+    );
 
-#define CONFIG_STRING_PROPERTY(name) CONFIG_PROPERTY(QString, name, toString)
-#define CONFIG_BOOL_PROPERTY(name) CONFIG_PROPERTY(bool, name, toBool)
-#define CONFIG_INT_PROPERTY(name) CONFIG_PROPERTY(int, name, toInt)
-#define CONFIG_DOUBLE_PROPERTY(name) CONFIG_PROPERTY(double, name, toDouble)
+#define CONFIG_STRING_PROPERTY(name) CONFIG_PROPERTY(QString, name, toString, toString().toStdString)
+#define CONFIG_BOOL_PROPERTY(name) CONFIG_PROPERTY(bool, name, toBool, toBool)
+#define CONFIG_INT_PROPERTY(name) CONFIG_PROPERTY(int, name, toInt, toInt)
+#define CONFIG_DOUBLE_PROPERTY(name) CONFIG_PROPERTY(double, name, toDouble, toDouble)
 
 /**
  * Use this when defining a member that is an object. The member will have
@@ -75,8 +103,9 @@ typedef QMap<QString, QJsonArray> JsonArrayMemberMap;
  * @param type JSON primitive type that will be stored in this array.
  * @param name Name of member (without plurality) that will be saved/loaded.
  * @param getterFunc Function to call on QJsonValue when getting stored value.
+ * @param toPythonFunc Function to convert the QVariant to a boost::python::object
  */
-#define CONFIG_ARRAY_PROPERTY(type, name, getterFunc) \
+#define CONFIG_ARRAY_PROPERTY(type, name, getterFunc, toPythonFunc) \
     private: QJsonArray* ___m_donotaccess_##name = AddArrayMember(#name); \
     public: void Add##name(type value) { m_arrays[#name].append(value); } \
     public: QVector<type> name()const \
@@ -90,12 +119,24 @@ typedef QMap<QString, QJsonArray> JsonArrayMemberMap;
             vec.push_back((*iter).getterFunc()); \
         } \
         return vec; \
+    } \
+    private: boost::python::list GetPython##name()const \
+    { \
+        boost::python::list l; \
+        QJsonArray arr = m_arrays[#name]; \
+        for(QJsonArray::iterator iter = arr.begin(); \
+            iter != arr.end(); \
+            ++iter) \
+        { \
+            l.append((*iter).toPythonFunc()); \
+        } \
+        return l; \
     }
 
-#define CONFIG_STRING_ARRAY_PROPERTY(name) CONFIG_ARRAY_PROPERTY(QString, name, toString)
-#define CONFIG_BOOL_ARRAY_PROPERTY(name) CONFIG_ARRAY_PROPERTY(bool, name, toBool)
-#define CONFIG_INT_ARRAY_PROPERTY(name) CONFIG_ARRAY_PROPERTY(int, name, toInt)
-#define CONFIG_DOUBLE_ARRAY_PROPERTY(name) CONFIG_ARRAY_PROPERTY(double, name, toDouble)
+#define CONFIG_STRING_ARRAY_PROPERTY(name) CONFIG_ARRAY_PROPERTY(QString, name, toString, toString().toStdString)
+#define CONFIG_BOOL_ARRAY_PROPERTY(name) CONFIG_ARRAY_PROPERTY(bool, name, toBool, toBool)
+#define CONFIG_INT_ARRAY_PROPERTY(name) CONFIG_ARRAY_PROPERTY(int, name, toInt, toInt)
+#define CONFIG_DOUBLE_ARRAY_PROPERTY(name) CONFIG_ARRAY_PROPERTY(double, name, toDouble, toDouble)
 
 /**
  * Use this when defining an array of object types. These objects must all be of the same
@@ -180,8 +221,18 @@ public:
      */
     QJsonObject ToObject();
 
+    /**
+     * @brief Convert this config to a python object.
+     *
+     * This will do the same thing as ToObject() however the resulting object
+     * will be a python compatable one.
+     *
+     * @return Config in python form.
+     */
+    boost::python::dict ToPythonObject();
+
 protected:
-    QJsonValue* AddMember(QString memberName);
+    QJsonValue* AddMember(QString memberName, MemberPythonGetter pyget);
     template<class T>
     ConfigBase* AddObjectMember(QString memberName);
     QJsonArray* AddArrayMember(QString memberName);

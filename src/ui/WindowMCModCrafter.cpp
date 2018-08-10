@@ -41,7 +41,6 @@ MCModCrafter::MCModCrafter(QWidget *parent)
         this,
         SLOT(PluginExecutionFinished(bool))
     );
-    PluginManager::Instance()->executePluginsForHook("mcmod.createproject.setup", boost::python::dict(), nullptr, nullptr);
 }
 
 void MCModCrafter::SetContent(QWidget* content)

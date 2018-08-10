@@ -69,9 +69,9 @@ bool ConfigBase::Save(QString path)
             iter != m_values.end();
             ++iter)
         {
-            if(!iter.value().isUndefined())
+            if(!iter.value().first.isUndefined())
             {
-                obj[iter.key()] = iter.value();
+                obj[iter.key()] = iter.value().first;
             }
         }
         for(JsonObjectMemberMap::iterator iter = m_objects.begin();
@@ -168,12 +168,12 @@ void ConfigBase::LoadFromObject(QJsonObject obj)
         if (obj.contains(key))
         {
             L_DEBUG(QString("Found value for property \"%1\".").arg(key));
-            m_values[key] = QJsonValue::fromVariant(obj[key].toVariant());
+            m_values[key].first = QJsonValue::fromVariant(obj[key].toVariant());
         }
         else
         {
             L_DEBUG(QString("Key \"%1\" not found.").arg(key));
-            m_values[key].fromVariant(QVariant());
+            m_values[key].first.fromVariant(QVariant());
         }
     }
     for (JsonObjectMemberMap::iterator iter = m_objects.begin();
@@ -218,7 +218,7 @@ QJsonObject ConfigBase::ToObject()
         iter != m_values.end();
         ++iter)
     {
-        obj.insert(iter.key(), m_values[iter.key()]);
+        obj.insert(iter.key(), m_values[iter.key()].first);
     }
     for(JsonObjectMemberMap::iterator iter = m_objects.begin();
         iter != m_objects.end();
@@ -236,9 +236,22 @@ QJsonObject ConfigBase::ToObject()
     return obj;
 }
 
-QJsonValue* ConfigBase::AddMember(QString memberName)
+boost::python::dict ConfigBase::ToPythonObject()
 {
-    m_values[memberName] = QJsonValue();
+    using namespace boost::python;
+    dict d;
+    for(JsonValueMemberMap::iterator iter = m_values.begin();
+        iter != m_values.end();
+        ++iter)
+    {
+        d[iter.key().toStdString()] = iter.value().second();
+    }
+    return d;
+}
+
+QJsonValue* ConfigBase::AddMember(QString memberName, MemberPythonGetter pyget)
+{
+    m_values[memberName] = Member(QJsonValue(), pyget);
     return nullptr;
 }
 
