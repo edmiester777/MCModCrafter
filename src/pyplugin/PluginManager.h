@@ -47,11 +47,12 @@ public:
     ~PluginManager() = default;
     
     void registerPlugin(PluginRef plugin);
+    PluginList getPluginsForHook(QString hook);
     void executePluginsForHook(
         QString hook,
-        boost::python::dict args,
-        CurrentPluginUpdatedCallback updateCB,
-        FinishedExecutingPluginCallback finishedCB
+        boost::python::dict args = boost::python::dict(),
+        CurrentPluginUpdatedCallback updateCB = nullptr,
+        FinishedExecutingPluginCallback finishedCB = nullptr
     );
     
 signals:
@@ -59,8 +60,6 @@ signals:
     void ExecutingFinished(bool success);
     
 private:
-    PluginList getPluginsForHook(QString hook);
-
     PluginMap m_mapper;
 };
 

@@ -95,6 +95,8 @@ int main(int argc, char *argv[])
     PluginManager::DestroyInstance();
     Py_Finalize();
     delete[] pypathc;
+    
+    return res;
 }
 
 #undef LOG_FMT

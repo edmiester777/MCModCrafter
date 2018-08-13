@@ -57,10 +57,10 @@ void MCModCrafter::SetContent(QWidget* content)
 
 void MCModCrafter::PluginExecuted(QString hook, PluginRef plugin, int current, int total)
 {
-    QString format = "Calling hook \"%1\"... %2(%3/%4)";
+    QString format = "%1 (%2/%3)...";
     QString message = format.arg(
         hook,
-        QString::fromStdString(plugin->getName()),
+        QString::fromStdString(plugin->getStatusText()),
         QString::number(current),
         QString::number(total)
     );

@@ -22,6 +22,7 @@
 #include "WidgetSelectProject.h"
 #include "DialogCreateProject.h"
 #include "RuntimeConfig.h"
+#include <pyplugin/PluginManager.h>
 #include <QDir>
 #include <QMessageBox>
 
@@ -67,7 +68,14 @@ void WidgetSelectProject::CreateProjectButtonClicked()
                     QMessageBox::Button::Ok
                 );
                 mb.exec();
+                return;
             }
+            using namespace boost::python;
+            dict kwargs;
+            kwargs["dir"] = subprojDir.absolutePath().toStdString();
+            PluginManager::Instance()->executePluginsForHook("mcmod.createproject.setup", kwargs, nullptr, [&](bool finishedSuccessfully){
+                success = finishedSuccessfully;
+            });
         }
     }
 }

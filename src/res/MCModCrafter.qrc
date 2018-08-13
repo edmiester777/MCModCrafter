@@ -1,6 +1,8 @@
 <RCC>
-    <qresource prefix="/MCModCrafter">
-        <file>runtimeconfig.json</file>
-        <file>img/loading-spinner.gif</file>
-    </qresource>
+  <qresource prefix="/MCModCrafter">
+    <file>img/checkmark.png</file>
+    <file>img/error.png</file>
+    <file>runtimeconfig.json</file>
+    <file>img/loading-spinner.gif</file>
+  </qresource>
 </RCC>

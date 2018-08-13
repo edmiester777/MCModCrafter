@@ -101,9 +101,12 @@ set(MCMODCRAFTER_HEADERS
     src/ProjectConfig.h
     src/FileDownloader.h
     src/ZipUtil.h
+
+    # UI Implementations
     src/ui/WindowMCModCrafter.h
     src/ui/WidgetSelectProject.h
     src/ui/DialogCreateProject.h
+    src/ui/PluginStatusWidget.h
 
     # Plugin modules
     src/pyplugin/PluginManager.h
@@ -121,9 +124,12 @@ set(MCMODCRAFTER_SOURCES
     src/RuntimeConfig.cpp
     src/FileDownloader.cpp
     src/ZipUtil.cpp
+
+    # UI Implementations
     src/ui/WindowMCModCrafter.cpp
     src/ui/WidgetSelectProject.cpp
     src/ui/DialogCreateProject.cpp
+    src/ui/PluginStatusWidget.cpp
 
     # Plugin modules
     src/pyplugin/MCModInternalModule.cpp
@@ -139,6 +145,8 @@ set(MCMODCRAFTER_FORMS
     src/forms/WindowMCModCrafter.ui
     src/forms/WidgetSelectProject.ui
     src/forms/DialogCreateProject.ui
+    src/forms/ProjectSetupWidget.ui
+    src/forms/PluginStatusWidget.ui
 )
 
 set(MCMODCRAFTER_RESOURCES

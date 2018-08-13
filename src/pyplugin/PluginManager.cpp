@@ -86,6 +86,15 @@ void PluginManager::registerPlugin(PluginRef plugin)
     }
 }
 
+PluginList PluginManager::getPluginsForHook(QString hook)
+{
+    if(m_mapper.contains(hook))
+    {
+        return m_mapper[hook];
+    }
+    return PluginList();
+}
+
 void PluginManager::executePluginsForHook(QString hook, dict kwargs, CurrentPluginUpdatedCallback updateCB, FinishedExecutingPluginCallback finishedCB)
 {
     PluginList plugins = getPluginsForHook(hook);
@@ -94,6 +103,9 @@ void PluginManager::executePluginsForHook(QString hook, dict kwargs, CurrentPlug
         L_WARN(QString("No plugins exist for this hook: %1").arg(hook));
         return;
     }
+    
+    // all plugins should have access to runtimeconfig
+    kwargs["runtimeconfig"] = RuntimeConfig::Instance()->ToPythonObject();
 
     for(int i = 0; i < plugins.length(); ++i)
     {
@@ -109,13 +121,4 @@ void PluginManager::executePluginsForHook(QString hook, dict kwargs, CurrentPlug
 
     if(finishedCB) finishedCB(true);
     emit ExecutingFinished(true);
-}
-
-PluginList PluginManager::getPluginsForHook(QString hook)
-{
-    if(m_mapper.contains(hook))
-    {
-        return m_mapper[hook];
-    }
-    return PluginList();
 }

@@ -5,6 +5,9 @@
     "ProjectConfigName": "project.modproj",
     "MinecraftForgeUrl": "http://files.minecraftforge.net/maven/net/minecraftforge/forge/1.12.2-14.23.1.2578/forge-1.12.2-14.23.1.2578-mdk.zip",
     "AvailableHooks": [
+        // NOTE: All plugins will have access to a kwarg named "runtimeconfig" that contains this
+        // document.
+
         // This is executed when a project is flagged to set up.
         //
         // Passed arguments:
