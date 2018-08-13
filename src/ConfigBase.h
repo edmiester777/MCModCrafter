@@ -119,7 +119,7 @@ typedef QMap<QString, Array> JsonArrayMemberMap;
         } \
         return vec; \
     } \
-    public: boost::python::list GetPython##name()const \
+    private: boost::python::list GetPython##name()const \
     { \
         boost::python::list l; \
         QJsonArray arr = m_arrays[#name].first; \
@@ -167,7 +167,7 @@ typedef QMap<QString, Array> JsonArrayMemberMap;
         } \
         return vec; \
     } \
-    public: boost::python::list GetPython##name()const \
+    private: boost::python::list GetPython##name()const \
     { \
         boost::python::list l; \
         QVector<cls> objs = ##name##s(); \
