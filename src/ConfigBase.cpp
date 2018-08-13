@@ -84,7 +84,7 @@ bool ConfigBase::Save(QString path)
             iter != m_arrays.end();
             ++iter)
         {
-            obj[iter.key()] = iter.value();
+            obj[iter.key()] = iter.value().first;
         }
         QJsonDocument doc;
         doc.setObject(obj);
@@ -200,7 +200,7 @@ void ConfigBase::LoadFromObject(QJsonObject obj)
         if (obj.contains(key) && obj[key].isArray())
         {
             L_DEBUG(QString("Found array for property \"%1\".").arg(key));
-            m_arrays[key] = obj[key].toArray();
+            m_arrays[key].first = obj[key].toArray();
         }
         else
         {
@@ -230,7 +230,7 @@ QJsonObject ConfigBase::ToObject()
         iter != m_arrays.end();
         ++iter)
     {
-        obj.insert(iter.key(), m_arrays[iter.key()]);
+        obj.insert(iter.key(), m_arrays[iter.key()].first);
     }
 
     return obj;
@@ -246,6 +246,13 @@ boost::python::dict ConfigBase::ToPythonObject()
     {
         d[iter.key().toStdString()] = iter.value().second();
     }
+    for(JsonArrayMemberMap::iterator iter = m_arrays.begin();
+        iter != m_arrays.end();
+        ++iter)
+    {
+        d[iter.key().toStdString()] = m_arrays[iter.key()].second();
+    }
+
     return d;
 }
 
@@ -255,8 +262,8 @@ QJsonValue* ConfigBase::AddMember(QString memberName, MemberPythonGetter pyget)
     return nullptr;
 }
 
-QJsonArray * ConfigBase::AddArrayMember(QString memberName)
+QJsonArray * ConfigBase::AddArrayMember(QString memberName, ArrayPythonGetter pyget)
 {
-    m_arrays[memberName] = QJsonArray();
+    m_arrays[memberName] = Array(QJsonArray(), pyget);
     return nullptr;
 }
