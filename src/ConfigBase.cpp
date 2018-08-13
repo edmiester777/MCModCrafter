@@ -246,6 +246,12 @@ boost::python::dict ConfigBase::ToPythonObject()
     {
         d[iter.key().toStdString()] = iter.value().second();
     }
+    for(JsonObjectMemberMap::iterator iter = m_objects.begin();
+        iter != m_objects.end();
+        ++iter)
+    {
+        d[iter.key().toStdString()] = m_objects[iter.key()].ToPythonObject();
+    }
     for(JsonArrayMemberMap::iterator iter = m_arrays.begin();
         iter != m_arrays.end();
         ++iter)
