@@ -152,7 +152,6 @@ typedef QMap<QString, Array> JsonArrayMemberMap;
  * @param name Name (without plurality) for the member.
  */
 #define CONFIG_OBJECT_ARRAY_PROPERTY(cls, name) \
-    private: QJsonArray* ___m_donotaccess_##name = AddArrayMember(#name); \
     public: void Add##name(cls value) { m_arrays[#name].append(value.ToObject()); } \
     public: QVector<cls> ##name##s()const \
     { \
@@ -175,7 +174,13 @@ typedef QMap<QString, Array> JsonArrayMemberMap;
         for(int i = 0; i < objs.length(); ++i) \
             l.append(objs[i].ToPythonObject()); \
         return l; \
-    }
+    } \
+    private: QJsonArray* ___m_donotaccess_##name = AddArrayMember( \
+        #name, \
+        [this]() -> boost::python::list { \
+            return GetPython##name(); \
+        } \
+    );
 
 /**
  * @brief Config base class.
