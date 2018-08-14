@@ -3,7 +3,7 @@
     "ProjectsDirectory": "projects",
     "DownloadsDirectory": "downloads",
     "ProjectConfigName": "project.modproj",
-    "MinecraftForgeUrl": "http://files.minecraftforge.net/maven/net/minecraftforge/forge/1.12.2-14.23.1.2578/forge-1.12.2-14.23.1.2578-mdk.zip",
+    "MinecraftForgeUrl": "https://files.minecraftforge.net/maven/net/minecraftforge/forge/1.12.2-14.23.4.2705/forge-1.12.2-14.23.4.2705-mdk.zip",
     "AvailableHooks": [
         // NOTE: All plugins will have access to a kwarg named "runtimeconfig" that contains this
         // document.
@@ -11,7 +11,7 @@
         // This is executed when a project is flagged to set up.
         //
         // Passed arguments:
-        //    * dir - New project directory.
+        //    * directory - Path to new project directory.
         "mcmod.createproject.setup"
     ]
 }

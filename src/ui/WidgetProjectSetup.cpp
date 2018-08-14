@@ -29,8 +29,6 @@ WidgetProjectSetup::WidgetProjectSetup(QDir path, QWidget *parent)
 {
     m_path = path;
     m_ui.setupUi(this);
-    if(path.exists())
-        path.removeRecursively();
     setupPlugins();
 }
 
@@ -39,7 +37,7 @@ void WidgetProjectSetup::beginInstall()
     using namespace boost::python;
     
     dict kwargs;
-    kwargs["dir"] = m_path.absolutePath().toStdString();
+    kwargs["directory"] = m_path.absolutePath().toStdString();
     
     PluginHookThreadWorker *worker = PluginManager::Instance()->executePluginsForHook(HOOK_CREATEPROJECT, kwargs);
     

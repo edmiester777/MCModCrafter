@@ -22,7 +22,7 @@ from mcmod import Plugin, register_plugin
 
 class CreateProjectDownloadForge(Plugin):
     def __init__(self):
-        Plugin.__init__(self, "mcmod.createproject.setup", 0)
+        Plugin.__init__(self, "mcmod.createproject.setup", 10)
         self.name = "CreateProjectDownloadForge"
         self.description = "Plugin to handle the first stage of creating a project. "\
             "This will download minecraft forge to the project directory."
@@ -30,7 +30,7 @@ class CreateProjectDownloadForge(Plugin):
         self.version = "0.0.1"
         self.status_text = "Downloading Minecraft Forge..."
 
-    def exec_hook(self, *args, **kwargs):
+    def exec_hook(self, directory, runtimeconfig):
         return True
 
 # Registering this plugin...

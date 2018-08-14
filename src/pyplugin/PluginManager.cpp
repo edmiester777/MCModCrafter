@@ -91,16 +91,15 @@ void PluginManager::registerPlugin(PluginRef plugin)
         
         // sorting plugins in order...
         PluginList &pluglist = m_mapper[hook];
-        PluginList::iterator iter = pluglist.begin();
-        while(iter != pluglist.end())
+        int i;
+        for(i = 0; i < pluglist.length(); ++i)
         {
-            if(plugin->getOrder() >= (*iter)->getOrder())
+            if(plugin->getOrder() <= pluglist[i]->getOrder())
             {
                 break;
             }
-            ++iter;
         }
-        pluglist.insert(iter, plugin);
+        pluglist.insert(i, plugin);
         L_INFO(QString("Registered plugin: %1").arg(QString::fromStdString(plugin->getName())));
     }
     else

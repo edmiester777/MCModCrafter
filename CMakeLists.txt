@@ -227,6 +227,7 @@ set(MCMODCRAFTER_SCRIPTS
     "pluginscan.py"
     "mcmodplugin/__init__.py"
     "mcmodplugin/create_project/__init__.py"
+    "mcmodplugin/create_project/setup_dirs.py"
     "mcmodplugin/create_project/download_forge.py"
 )
 foreach(SCRIPT ${MCMODCRAFTER_SCRIPTS})
