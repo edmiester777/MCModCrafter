@@ -106,10 +106,13 @@ set(MCMODCRAFTER_HEADERS
     src/ui/WindowMCModCrafter.h
     src/ui/WidgetSelectProject.h
     src/ui/DialogCreateProject.h
+    src/ui/WidgetProjectSetup.h
     src/ui/WidgetPluginStatus.h
 
     # Plugin modules
+    src/pyplugin/AcquireGIL.h
     src/pyplugin/PluginManager.h
+    src/pyplugin/PyThread.h
     src/pyplugin/PyPlugin.h
     src/pyplugin/PyLogger.h
 
@@ -129,11 +132,14 @@ set(MCMODCRAFTER_SOURCES
     src/ui/WindowMCModCrafter.cpp
     src/ui/WidgetSelectProject.cpp
     src/ui/DialogCreateProject.cpp
+    src/ui/WidgetProjectSetup.cpp
     src/ui/WidgetPluginStatus.cpp
 
     # Plugin modules
     src/pyplugin/MCModInternalModule.cpp
+    src/pyplugin/AcquireGIL.cpp
     src/pyplugin/PluginManager.cpp
+    src/pyplugin/PyThread.cpp
     src/pyplugin/PyPlugin.cpp
     src/pyplugin/PyLogger.cpp
 

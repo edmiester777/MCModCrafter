@@ -38,44 +38,5 @@ void WidgetSelectProject::CreateProjectButtonClicked()
 {
     L_INFO("Opening create project dialog...");
     DialogCreateProject dcp;
-    if(dcp.exec() == QDialog::Accepted)
-    {
-        ProjectConfig config;
-        config = dcp.Config();
-        QDir projDir(RuntimeConfig::Instance()->GetProjectsDirectory());
-        QDir subprojDir(projDir.absolutePath() + QDir::separator() + config.GetProjectName());
-        if(subprojDir.exists())
-        {
-            L_WARN("User tried to create a project that already exists.");
-            QMessageBox mb(
-                QMessageBox::Icon::Information,
-                "Error",
-                QString("You already have a project named \"%1\"!").arg(config.GetProjectName()),
-                QMessageBox::Button::Ok
-            );
-            mb.exec();
-        }
-        else
-        {
-            subprojDir.mkpath(".");
-            bool success = config.Save(subprojDir.absoluteFilePath(RuntimeConfig::Instance()->GetProjectConfigName()));
-            if(!success)
-            {
-                QMessageBox mb(
-                    QMessageBox::Icon::Critical,
-                    "Error",
-                    "Could not save project configuration.",
-                    QMessageBox::Button::Ok
-                );
-                mb.exec();
-                return;
-            }
-            using namespace boost::python;
-            dict kwargs;
-            kwargs["dir"] = subprojDir.absolutePath().toStdString();
-            PluginManager::Instance()->executePluginsForHook("mcmod.createproject.setup", kwargs, nullptr, [&](bool finishedSuccessfully){
-                success = finishedSuccessfully;
-            });
-        }
-    }
+    dcp.exec();
 }

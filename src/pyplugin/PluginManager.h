@@ -22,9 +22,11 @@
 
 #include <stdafx.h>
 #include "PyPlugin.h"
+#include "PyThread.h"
 #include <QHash>
 #include <QList>
 #include <functional>
+#include <QThread>
 
 using namespace std;
 
@@ -33,7 +35,18 @@ typedef QList<PluginRef> PluginList;
 typedef QHash<QString, PluginList> PluginMap;
 
 typedef function<void(PluginRef plugin, int current, int total)> CurrentPluginUpdatedCallback;
-typedef function<void(bool success)> FinishedExecutingPluginCallback;
+typedef function<void(bool success, PluginRef failedPlugin, int failedIndex)> FinishedExecutingPluginCallback;
+
+class PluginHookThreadWorker : public PyThreadWorker
+{
+    Q_OBJECT
+public:
+    PluginHookThreadWorker(QString hook, boost::python::dict kwargs, PluginList plugins);
+    
+signals:
+    void nextPluginStarted(PluginRef plugin, int index, int total);
+    void finishedExecuting(bool success, PluginRef failedPlugin, int failedIndex);
+};
 
 class PluginManager : public QObject
 {
@@ -44,22 +57,24 @@ public:
     static void RegisterPlugin(PluginRef plugin);
     
     PluginManager();
-    ~PluginManager() = default;
+    virtual ~PluginManager();
     
     void registerPlugin(PluginRef plugin);
     PluginList getPluginsForHook(QString hook);
-    void executePluginsForHook(
+    PluginHookThreadWorker *executePluginsForHook(
         QString hook,
-        boost::python::dict args = boost::python::dict(),
-        CurrentPluginUpdatedCallback updateCB = nullptr,
-        FinishedExecutingPluginCallback finishedCB = nullptr
+        boost::python::dict args = boost::python::dict()
     );
+    void exec(Work w);
+    void exec(PyThreadWorker *worker);
+    void cleanupPlugins();
     
 signals:
     void ExecutingHook(QString hook, PluginRef plugin, int current, int total);
     void ExecutingFinished(bool success);
     
 private:
+    PyThread m_thread;
     PluginMap m_mapper;
 };
 

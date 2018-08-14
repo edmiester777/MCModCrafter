@@ -21,6 +21,8 @@
 #include "stdafx.h"
 #include "ui/WindowMCModCrafter.h"
 #include <QtWidgets/QApplication>
+#include <QMutex>
+#include <QWaitCondition>
 #include "RuntimeConfig.h"
 #include <pyplugin/PyLogger.h>
 #include <pyplugin/PluginManager.h>
@@ -44,6 +46,7 @@ void CreateDirIfNotExists(QString dir)
 
 int main(int argc, char *argv[])
 {
+    qRegisterMetaType<PluginRef>("PluginRef");
     QApplication a(argc, argv);
     
     // initializing logger...
@@ -60,40 +63,60 @@ int main(int argc, char *argv[])
     
     PyImport_AppendInittab("mcmod", INIT_MCMOD_MODULE);
     Py_SetProgramName(pypathc);
-    Py_Initialize();
+    PluginManager::Instance(); // forcing the loading and starting of python thread.
     
     // adding current directory to module...
     L_DEBUG("Adding scripts to interpreter path...");
+    QMutex mtx;
+    QWaitCondition condition;
     namespace bp = boost::python;
-    bp::object sys = bp::import("sys");
-    sys.attr("path").attr("append")(std::string(pypathc));
+    PluginManager::Instance()->exec([&](){
+        bp::object sys = bp::import("sys");
+        sys.attr("path").attr("append")(std::string(pypathc));
 
-    // attempting to load plugins
-    try
-    {
-        bp::import("pluginscan");
-    }
-    catch(bp::error_already_set &)
-    {
-        PyErr_Print();
-        PyErr_Clear();
-        L_WARN("Failed to load plugins.");
-    }
-    
-    // running application
-    L_INFO("Initializing MCModCrafter...");
-    MCModCrafter w;
-    w.show();
+        // attempting to load plugins
+        try
+        {
+            bp::import("pluginscan");
+        }
+        catch(bp::error_already_set &)
+        {
+            PyErr_Print();
+            PyErr_Clear();
+            L_WARN("Failed to load plugins.");
+        }
 
 #ifdef DEBUG
-    L_DEBUG("Starting interactive interpreter...");
-    Py_Main(argc, argv);
+        L_DEBUG("Starting interactive interpreter...");
+        Py_Main(argc, argv);
 #endif // DEBUG
+
+        condition.wakeAll();
+    });
+
+    // waiting for plugin initialization to finish.
+    mtx.lock();
+    condition.wait(&mtx);
+    mtx.unlock();
+
+    // running application
+    L_INFO("Initializing MCModCrafter...");
+    MCModCrafter::Instance()->show();
 
     int res = a.exec();
     
+    PluginManager::Instance()->exec([&](){
+        delete MCModCrafter::Instance();
+        PluginManager::Instance()->cleanupPlugins();
+        
+        condition.wakeAll();
+    });
+    
+    // waiting for destruction to finish
+    mtx.lock();
+    condition.wait(&mtx);
+    mtx.unlock();
     PluginManager::DestroyInstance();
-    Py_Finalize();
     delete[] pypathc;
     
     return res;

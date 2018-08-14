@@ -22,6 +22,17 @@
 #include "WindowMCModCrafter.h"
 #include "WidgetSelectProject.h"
 
+// REMOVE ME
+#include "WidgetProjectSetup.h"
+
+MCModCrafter* MCModCrafter::Instance()
+{
+    static MCModCrafter* instance = nullptr;
+    if(instance == nullptr)
+        instance = new MCModCrafter;
+    return instance;
+}
+
 MCModCrafter::MCModCrafter(QWidget *parent)
     : QMainWindow(parent)
 {
@@ -50,6 +61,7 @@ void MCModCrafter::SetContent(QWidget* content)
         delete m_content;
     }
     m_content = content;
+    delete m_ui.centralWidget->layout();
     QVBoxLayout *layout = new QVBoxLayout;
     layout->addWidget(m_content);
     m_ui.centralWidget->setLayout(layout);
@@ -59,9 +71,8 @@ void MCModCrafter::PluginExecuted(QString hook, PluginRef plugin, int current, i
 {
     QString format = "%1 (%2/%3)...";
     QString message = format.arg(
-        hook,
         QString::fromStdString(plugin->getStatusText()),
-        QString::number(current),
+        QString::number(current + 1),
         QString::number(total)
     );
     statusBar()->showMessage(message);

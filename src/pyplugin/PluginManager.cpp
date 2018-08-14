@@ -23,6 +23,26 @@
 
 using namespace boost::python;
 
+PluginHookThreadWorker::PluginHookThreadWorker(QString hook, boost::python::dict kwargs, PluginList plugins)
+    : PyThreadWorker(nullptr)
+{
+    setWork([this, hook, kwargs, plugins](){
+        for(int i = 0; i < plugins.length(); ++i)
+        {
+            emit nextPluginStarted(plugins[i], i, plugins.length());
+            bool success = plugins[i]->execHook(kwargs);
+
+            if(!success)
+            {
+                emit finishedExecuting(false, plugins[i], i);
+                return;
+            }
+        }
+        
+        emit finishedExecuting(true, nullptr, -1);
+    });
+}
+
 PluginManager* PluginManager::Instance()
 {
     static PluginManager* instance = nullptr;
@@ -35,7 +55,7 @@ PluginManager* PluginManager::Instance()
 
 void PluginManager::DestroyInstance()
 {
-    L_INFO("Destroying managed plugins...");
+    L_INFO("Destroying PluginManager instance...");
     delete PluginManager::Instance();
 }
 
@@ -46,7 +66,13 @@ void PluginManager::RegisterPlugin(PluginRef plugin)
 
 PluginManager::PluginManager()
 {
-    
+    m_thread.start();
+}
+
+PluginManager::~PluginManager()
+{
+    m_thread.signalStop();
+    m_thread.wait();
 }
 
 void PluginManager::registerPlugin(PluginRef plugin)
@@ -95,30 +121,52 @@ PluginList PluginManager::getPluginsForHook(QString hook)
     return PluginList();
 }
 
-void PluginManager::executePluginsForHook(QString hook, dict kwargs, CurrentPluginUpdatedCallback updateCB, FinishedExecutingPluginCallback finishedCB)
+PluginHookThreadWorker *PluginManager::executePluginsForHook(QString hook, dict kwargs)
 {
+    // all plugins should have access to runtimeconfig
+    kwargs["runtimeconfig"] = RuntimeConfig::Instance()->ToPythonObject();
+    
     PluginList plugins = getPluginsForHook(hook);
     if(plugins.empty())
     {
         L_WARN(QString("No plugins exist for this hook: %1").arg(hook));
+        return nullptr;
+    }
+    
+    PluginHookThreadWorker *worker = new PluginHookThreadWorker(hook, kwargs, plugins);
+    
+    connect(
+        worker,
+        &PluginHookThreadWorker::nextPluginStarted,
+        [=](PluginRef plugin, int index, int total){ emit ExecutingHook(hook, plugin, index, total); }
+    );
+    connect(
+        worker,
+        &PluginHookThreadWorker::finishedExecuting,
+        [=](bool success, PluginRef failedPlugin, int failedIndex) { emit ExecutingFinished(success); }
+    );
+    
+    return worker;
+}
+
+void PluginManager::exec(Work w)
+{
+    exec(new PyThreadWorker(w));
+}
+
+void PluginManager::exec(PyThreadWorker *worker)
+{
+    if(worker == nullptr)
+    {
+        L_WARN("Trying to execute a PyThreadWorker * that is nullptr.");
         return;
     }
     
-    // all plugins should have access to runtimeconfig
-    kwargs["runtimeconfig"] = RuntimeConfig::Instance()->ToPythonObject();
+    m_thread.add(worker);
+}
 
-    for(int i = 0; i < plugins.length(); ++i)
-    {
-        emit ExecutingHook(hook, plugins[i], i + 1, plugins.length());
-        if(updateCB) updateCB(plugins[i], i + 1, plugins.length());
-        if(!plugins[i]->execHook(kwargs))
-        {
-            if(finishedCB) finishedCB(false);
-            emit ExecutingFinished(false);
-            return;
-        }
-    }
-
-    if(finishedCB) finishedCB(true);
-    emit ExecutingFinished(true);
+void PluginManager::cleanupPlugins()
+{
+    L_INFO("Destroying managed plugins...");
+    m_mapper.clear();
 }

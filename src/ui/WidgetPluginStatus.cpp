@@ -31,8 +31,6 @@ WidgetPluginStatus::WidgetPluginStatus(PluginRef plugin, QWidget *parent)
 
 void WidgetPluginStatus::setRunning()
 {
-    m_ui.statusLabel->setText(QString::fromStdString(m_plugin->getStatusText()));
-    
     // setting up animated label
     QMovie *movie = new QMovie(":/MCModCrafter/img/loading-spinner.gif");
     m_ui.imageLabel->setMovie(movie);
@@ -42,9 +40,33 @@ void WidgetPluginStatus::setRunning()
     m_ui.imageLabel->setVisible(true);
 }
 
+void WidgetPluginStatus::setSuccess()
+{
+    m_ui.imageLabel->setVisible(true);
+    m_ui.statusLabel->setVisible(true);
+    if(m_ui.imageLabel->movie())
+        delete m_ui.imageLabel->movie();
+    QMovie *movie = new QMovie(":/MCModCrafter/img/checkmark.png");
+    m_ui.imageLabel->setMovie(movie);
+    movie->start();
+}
+
+void WidgetPluginStatus::setError()
+{
+    m_ui.imageLabel->setVisible(true);
+    m_ui.statusLabel->setVisible(true);
+    m_ui.statusLabel->setText("An error occurred while running this plugin.");
+    if(m_ui.imageLabel->movie())
+        delete m_ui.imageLabel->movie();
+    QMovie *movie = new QMovie(":/MCModCrafter/img/error.png");
+    m_ui.imageLabel->setMovie(movie);
+    movie->start();
+}
+
 void WidgetPluginStatus::setInitialState()
 {
     m_ui.titleLabel->setText(QString::fromStdString(m_plugin->getName()));
+    m_ui.statusLabel->setText(QString::fromStdString(m_plugin->getStatusText()));
     m_ui.statusLabel->setVisible(false);
     m_ui.imageLabel->setVisible(false);
 }

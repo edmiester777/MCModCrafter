@@ -18,30 +18,34 @@
 * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 *************************************************************************/
 
-#ifndef __WINDOWMCMODCRAFTER_H__
-#define __WINDOWMCMODCRAFTER_H__
+#ifndef __WIDGET_PROJECT_SETUP_H__
+#define __WIDGET_PROJECT_SETUP_H__
 
-#include <QtWidgets/QMainWindow>
-#include <ui_WindowMCModCrafter.h>
-#include <pyplugin/PluginManager.h>
+#include <QWidget>
+#include <ui_WidgetProjectSetup.h>
+#include <QDir>
+#include "WidgetPluginStatus.h"
 
-class MCModCrafter : public QMainWindow
+using namespace std;
+
+class WidgetProjectSetup : public QWidget
 {
     Q_OBJECT
 public:
-    static MCModCrafter* Instance();
+    WidgetProjectSetup(QDir path, QWidget *parent = Q_NULLPTR);
     
-    MCModCrafter(QWidget *parent = Q_NULLPTR);
-
-    void SetContent(QWidget* content);
+    void beginInstall();
     
 public slots:
-    void PluginExecuted(QString hook, PluginRef plugin, int current, int total);
-    void PluginExecutionFinished(bool success);
-    
+    void nextPlugin(PluginRef plugin, int index, int total);
+    void finishedHook(bool success, PluginRef failedPlugin, int failedIndex);
+
 private:
-    Ui::WindowMCModCrafter m_ui;
-    QWidget* m_content;
+    void setupPlugins();
+    
+    Ui::WidgetProjectSetup m_ui;
+    QDir m_path;
+    QList<WidgetPluginStatus *> m_pluginWidgets;
 };
 
-#endif //!__WINDOWMCMODCRAFTER_H__
+#endif //!__WIDGET_PROJECT_SETUP_H__

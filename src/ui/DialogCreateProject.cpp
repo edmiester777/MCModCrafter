@@ -20,8 +20,11 @@
 
 #include <stdafx.h>
 #include "DialogCreateProject.h"
+#include "WidgetProjectSetup.h"
+#include "WindowMCModCrafter.h"
 #include <QMessageBox>
-#include "FileDownloader.h"
+#include <QDir>
+#include <RuntimeConfig.h>
 
 DialogCreateProject::DialogCreateProject(QWidget *parent)
     : QDialog(parent)
@@ -60,7 +63,7 @@ void DialogCreateProject::ValidateInfo()
         m_config.SetProjectModID(m_ui.projectModIDLineEdit->text());
         m_config.SetProjectAuthor(m_ui.projectAuthorLineEdit->text());
         m_config.SetProjectVersion(m_ui.projectVersionLineEdit->text());
-        accept();
+        SetupNewProject();
     }
 }
 
@@ -71,5 +74,39 @@ ProjectConfig& DialogCreateProject::Config()
 
 void DialogCreateProject::SetupNewProject()
 {
-    FileDownloader downloader;
+    ProjectConfig config;
+    config = Config();
+    QDir projDir(RuntimeConfig::Instance()->GetProjectsDirectory());
+    QDir subprojDir(projDir.absolutePath() + QDir::separator() + config.GetProjectName());
+    if(subprojDir.exists())
+    {
+        L_WARN("User tried to create a project that already exists.");
+        QMessageBox mb(
+                       QMessageBox::Icon::Information,
+                       "Error",
+                       QString("You already have a project named \"%1\"!").arg(config.GetProjectName()),
+                       QMessageBox::Button::Ok
+                       );
+        mb.exec();
+    }
+    else
+    {
+        subprojDir.mkpath(".");
+        bool success = config.Save(subprojDir.absoluteFilePath(RuntimeConfig::Instance()->GetProjectConfigName()));
+        if(!success)
+        {
+            QMessageBox mb(
+                           QMessageBox::Icon::Critical,
+                           "Error",
+                           "Could not save project configuration.",
+                           QMessageBox::Button::Ok
+                           );
+            mb.exec();
+            return;
+        }
+        WidgetProjectSetup *setupwidg = new WidgetProjectSetup(subprojDir);
+        MCModCrafter::Instance()->SetContent(setupwidg);
+        setupwidg->beginInstall();
+        close();
+    }
 }

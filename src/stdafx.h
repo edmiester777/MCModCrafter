@@ -25,5 +25,8 @@
 #include <QFile>
 #include "simpleQtLogger.h"
 #include <boost/python.hpp>
+#include <pyplugin/AcquireGIL.h>
+
+#define HOOK_CREATEPROJECT "mcmod.createproject.setup"
 
 using namespace simpleqtlogger;
