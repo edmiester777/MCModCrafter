@@ -99,8 +99,6 @@ set(MCMODCRAFTER_HEADERS
     src/ConfigBase.h
     src/RuntimeConfig.h
     src/ProjectConfig.h
-    src/FileDownloader.h
-    src/ZipUtil.h
 
     # UI Implementations
     src/ui/WindowMCModCrafter.h
@@ -125,8 +123,6 @@ set(MCMODCRAFTER_SOURCES
     src/stdafx.cpp
     src/ConfigBase.cpp
     src/RuntimeConfig.cpp
-    src/FileDownloader.cpp
-    src/ZipUtil.cpp
 
     # UI Implementations
     src/ui/WindowMCModCrafter.cpp

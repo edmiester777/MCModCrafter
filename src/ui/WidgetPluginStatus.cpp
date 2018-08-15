@@ -23,6 +23,7 @@
 #include <QMessageBox>
 
 WidgetPluginStatus::WidgetPluginStatus(PluginRef plugin, QWidget *parent)
+    : QWidget(parent)
 {
     m_plugin = plugin;
     m_ui.setupUi(this);
