@@ -35,6 +35,9 @@ public:
     void setSuccess();
     void setError();
 
+public slots:
+    void pluginInfoUpdated();
+
 private:
     void setInitialState();
     Ui::WidgetPluginStatus m_ui;

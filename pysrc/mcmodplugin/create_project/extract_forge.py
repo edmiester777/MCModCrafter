@@ -20,28 +20,31 @@
 
 from mcmod import Plugin, register_plugin
 import os
+import stat
+from zipfile import ZipFile
 
-class SetupProjectDirectories(Plugin):
+class CreateProjectExtractForge(Plugin):
     def __init__(self):
-        Plugin.__init__(self, "mcmod.createproject.setup", 0)
-        self.name = "SetupProjectDirectories"
-        self.title = "Create Workspace"
-        self.description = "This plugin will do the initial directory setup for "\
-            "a new project."
+        Plugin.__init__(self, "mcmod.createproject.setup", 20)
+        self.name = "CreateProjectExtractForge"
+        self.title = "Extract Minecraft Forge"
+        self.description = "Plugin to handle extracting forge to the desired destination."
         self.author = "edmiester777"
         self.version = "0.0.1"
-        self.status_text = "Setting up environment..."
+        self.status_text = "Unzipping Minecraft Forge..."
 
     def exec_hook(self, directory, runtimeconfig):
-        downloadsDir = os.path.join(directory, runtimeconfig["DownloadsDirectory"])
-        forgeDir = os.path.join(directory, runtimeconfig["ForgeDirectory"])
-        if not os.path.exists(directory):
-            os.makedirs(directory)
-        if not os.path.exists(downloadsDir):
-            os.makedirs(downloadsDir)
-        if not os.path.exists(forgeDir):
-            os.makedirs(forgeDir)
+        forge_file = os.path.join(directory, runtimeconfig["DownloadsDirectory"], "forge.zip")
+        target_dir = os.path.join(directory, runtimeconfig["ForgeDirectory"])
+        with ZipFile(forge_file, "r") as zip_ref:
+            zip_ref.extractall(target_dir)
+
+        if not os.name == 'nt':
+            self.logger.debug("Attempting to make gradlew executable.")
+            gradlew = os.path.join(directory, runtimeconfig["ForgeDirectory"], "gradlew")
+            st = os.stat(gradlew)
+            os.chmod(gradlew, st.st_mode | stat.S_IEXEC)
         return True
 
 # Registering this plugin...
-register_plugin(SetupProjectDirectories())
+register_plugin(CreateProjectExtractForge())

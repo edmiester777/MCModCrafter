@@ -19,11 +19,14 @@
 #########################################################################
 
 from mcmod import Plugin, register_plugin
+import os
+import urllib2
 
 class CreateProjectDownloadForge(Plugin):
     def __init__(self):
         Plugin.__init__(self, "mcmod.createproject.setup", 10)
         self.name = "CreateProjectDownloadForge"
+        self.title = "Download Minecraft Forge"
         self.description = "Plugin to handle the first stage of creating a project. "\
             "This will download minecraft forge to the project directory."
         self.author = "edmiester777"
@@ -31,6 +34,25 @@ class CreateProjectDownloadForge(Plugin):
         self.status_text = "Downloading Minecraft Forge..."
 
     def exec_hook(self, directory, runtimeconfig):
+        url = runtimeconfig["MinecraftForgeUrl"]
+        file_name = os.path.join(directory, runtimeconfig["DownloadsDirectory"], "forge.zip")
+        u = urllib2.urlopen(url)
+        f = open(file_name, 'wb')
+        meta = u.info()
+        file_size = int(meta.getheaders("Content-Length")[0])
+        self.logger.debug('Downloading "%s" -> "%s"... Size: %s' % (url, file_name, file_size))
+        file_size_dl = 0
+        block_sz = 8192
+        while True:
+            buffer = u.read(block_sz)
+            if not buffer:
+                break
+
+            file_size_dl += len(buffer)
+            f.write(buffer)
+            self.status_text = "Downloading Minecraft Forge... %3.2f%%" % (file_size_dl * 100 / file_size)
+
+        f.close()
         return True
 
 # Registering this plugin...

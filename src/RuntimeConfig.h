@@ -33,6 +33,7 @@ private:
     CONFIG_STRING_PROPERTY(LogsDirectory);
     CONFIG_STRING_PROPERTY(ProjectsDirectory);
     CONFIG_STRING_PROPERTY(DownloadsDirectory);
+    CONFIG_STRING_PROPERTY(ForgeDirectory);
     CONFIG_STRING_PROPERTY(ProjectConfigName);
     CONFIG_STRING_PROPERTY(MinecraftForgeUrl);
     CONFIG_STRING_ARRAY_PROPERTY(AvailableHooks);

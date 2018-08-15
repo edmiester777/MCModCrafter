@@ -18,7 +18,23 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #########################################################################
 
-import setup_dirs
-import download_forge
-import extract_forge
-import setup_decomp_workspace
+import os
+import subprocess
+
+##
+# @brief Run a target on gradle project.
+#
+# This static function helps you spawn the subprocess and read output
+# in a standard way for a target gradle command.
+#
+# @param projectdir Directory for project.
+# @param runtimeconfig RuntimeConfig passed to the calling plugin.
+# @param target Target command to execute on gradle.
+# @param on_output Callable method which we should call when we receive output.
+def runTarget(projectdir, runtimeconfig, target, on_output):
+    forge_dir = os.path.join(projectdir, runtimeconfig["ForgeDirectory"])
+    executable = os.path.join(forge_dir, "gradlew")
+    p = subprocess.Popen([executable, target], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, cwd=forge_dir)
+    for line in iter(p.stdout.readline, b''):
+        if on_output is not None:
+            on_output(line.rstrip())

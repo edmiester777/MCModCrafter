@@ -19,29 +19,27 @@
 #########################################################################
 
 from mcmod import Plugin, register_plugin
+from mcmodplugin.helper import gradle_helper
 import os
+from zipfile import ZipFile
 
-class SetupProjectDirectories(Plugin):
+class CreateProjectSetupDecompWorkspace(Plugin):
     def __init__(self):
-        Plugin.__init__(self, "mcmod.createproject.setup", 0)
-        self.name = "SetupProjectDirectories"
-        self.title = "Create Workspace"
-        self.description = "This plugin will do the initial directory setup for "\
-            "a new project."
+        Plugin.__init__(self, "mcmod.createproject.setup", 30)
+        self.name = "CreateProjectSetupDecompWorkspace"
+        self.title = "Setup Decompiled Workspace"
+        self.description = "Plugin to handle setting up a decompiled minecraft forge workspace."
         self.author = "edmiester777"
         self.version = "0.0.1"
-        self.status_text = "Setting up environment..."
+        self.status_text = "Working on it..."
 
     def exec_hook(self, directory, runtimeconfig):
-        downloadsDir = os.path.join(directory, runtimeconfig["DownloadsDirectory"])
-        forgeDir = os.path.join(directory, runtimeconfig["ForgeDirectory"])
-        if not os.path.exists(directory):
-            os.makedirs(directory)
-        if not os.path.exists(downloadsDir):
-            os.makedirs(downloadsDir)
-        if not os.path.exists(forgeDir):
-            os.makedirs(forgeDir)
+        gradle_helper.runTarget(directory, runtimeconfig, "setupDevWorkspace", self.update_status)
         return True
+        
+    def update_status(self, status):
+        self.logger.debug('>>> %s' % (status))
+        self.status_text = status
 
 # Registering this plugin...
-register_plugin(SetupProjectDirectories())
+register_plugin(CreateProjectSetupDecompWorkspace())

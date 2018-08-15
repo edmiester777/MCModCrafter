@@ -224,11 +224,15 @@ message(${CMAKE_C_FLAGS_DEBUG})
 
 # Configuring scripts
 set(MCMODCRAFTER_SCRIPTS
-    "pluginscan.py"
-    "mcmodplugin/__init__.py"
-    "mcmodplugin/create_project/__init__.py"
-    "mcmodplugin/create_project/setup_dirs.py"
-    "mcmodplugin/create_project/download_forge.py"
+    pluginscan.py
+    mcmodplugin/__init__.py
+    mcmodplugin/create_project/__init__.py
+    mcmodplugin/create_project/setup_dirs.py
+    mcmodplugin/create_project/download_forge.py
+    mcmodplugin/create_project/extract_forge.py
+    mcmodplugin/create_project/setup_decomp_workspace.py
+    mcmodplugin/helper/__init__.py
+    mcmodplugin/helper/gradle_helper.py
 )
 foreach(SCRIPT ${MCMODCRAFTER_SCRIPTS})
     message(STATUS "Configuring ${SCRIPT}...")

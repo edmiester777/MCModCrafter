@@ -27,6 +27,13 @@ WidgetPluginStatus::WidgetPluginStatus(PluginRef plugin, QWidget *parent)
     m_plugin = plugin;
     m_ui.setupUi(this);
     setInitialState();
+
+    connect(
+        m_plugin.get(),
+        SIGNAL(infoUpdated()),
+        this,
+        SLOT(pluginInfoUpdated())
+    );
 }
 
 void WidgetPluginStatus::setRunning()
@@ -63,11 +70,16 @@ void WidgetPluginStatus::setError()
     movie->start();
 }
 
+void WidgetPluginStatus::pluginInfoUpdated()
+{
+    m_ui.titleLabel->setText(QString::fromStdString(m_plugin->getTitle()));
+    m_ui.statusLabel->setText(QString::fromStdString(m_plugin->getStatusText()));
+}
+
 void WidgetPluginStatus::setInitialState()
 {
-    m_ui.titleLabel->setText(QString::fromStdString(m_plugin->getName()));
+    m_ui.titleLabel->setText(QString::fromStdString(m_plugin->getTitle()));
     m_ui.statusLabel->setText(QString::fromStdString(m_plugin->getStatusText()));
     m_ui.statusLabel->setVisible(false);
     m_ui.imageLabel->setVisible(false);
 }
-

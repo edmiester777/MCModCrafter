@@ -20,7 +20,7 @@
 
 #include "PyPlugin.h"
 
-PyPlugin::PyPlugin(string hook, int order)
+PyPlugin::PyPlugin(string hook, int order) : QObject(nullptr)
 {
     setHook(hook);
     setOrder(order);
@@ -33,6 +33,7 @@ void PyPlugin::setName(string name)
 {
     m_name = name;
     m_logger = PyLogger(m_name);
+    emit infoUpdated();
 }
 
 string PyPlugin::getName()
@@ -40,9 +41,21 @@ string PyPlugin::getName()
     return m_name;
 }
 
+void PyPlugin::setTitle(string title)
+{
+    m_title = title;
+    emit infoUpdated();
+}
+
+string PyPlugin::getTitle()
+{
+    return m_title;
+}
+
 void PyPlugin::setDescription(std::string description)
 {
     m_description = description;
+    emit infoUpdated();
 }
 
 string PyPlugin::getDescription()
@@ -53,6 +66,7 @@ string PyPlugin::getDescription()
 void PyPlugin::setAuthor(std::string author)
 {
     m_author = author;
+    emit infoUpdated();
 }
 
 string PyPlugin::getAuthor()
@@ -63,6 +77,7 @@ string PyPlugin::getAuthor()
 void PyPlugin::setVersion(std::string version)
 {
     m_version = version;
+    emit infoUpdated();
 }
 
 string PyPlugin::getVersion()
@@ -73,6 +88,7 @@ string PyPlugin::getVersion()
 void PyPlugin::setStatusText(string text)
 {
     m_statusText = text;
+    emit infoUpdated();
 }
 
 string PyPlugin::getStatusText()

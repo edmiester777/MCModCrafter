@@ -36,8 +36,9 @@ using namespace boost::python;
  * application. I want to be able to maintain hooks to the application as well
  * as extended functionality.
  */
-class PyPlugin
+class PyPlugin : public QObject
 {
+    Q_OBJECT
 public:
     PyPlugin(string hook, int order = DEFAULT_PLUGIN_ORDER);
     virtual ~PyPlugin() = default;
@@ -45,6 +46,8 @@ public:
     // ACCESSORS / MUTATORS
     void setName(string name);
     string getName();
+    void setTitle(string title);
+    string getTitle();
     void setDescription(string description);
     string getDescription();
     void setAuthor(string author);
@@ -66,10 +69,14 @@ public:
      * @return True if execution of other plugins should continue, else false.
      */
     virtual bool execHook(dict kwargs);
+
+signals:
+    void infoUpdated();
     
 private:
     PyLogger m_logger;
     string m_name;
+    string m_title;
     string m_description;
     string m_author;
     string m_version;
