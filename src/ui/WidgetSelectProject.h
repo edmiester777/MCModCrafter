@@ -31,9 +31,11 @@ public:
     WidgetSelectProject(QWidget *parent = Q_NULLPTR);
 
 private slots:
-    void CreateProjectButtonClicked();
+    void createProjectButtonClicked();
 
 private:
+    void selectProjectClicked(QString dir);
+    void scanForProjects();
     Ui::WidgetSelectProject m_ui;
 };
 

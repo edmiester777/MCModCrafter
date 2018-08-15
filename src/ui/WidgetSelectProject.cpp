@@ -22,8 +22,10 @@
 #include "WidgetSelectProject.h"
 #include "DialogCreateProject.h"
 #include "RuntimeConfig.h"
+#include "ProjectConfig.h"
 #include <pyplugin/PluginManager.h>
 #include <QDir>
+#include <QDirIterator>
 #include <QMessageBox>
 
 WidgetSelectProject::WidgetSelectProject(QWidget *parent)
@@ -31,12 +33,49 @@ WidgetSelectProject::WidgetSelectProject(QWidget *parent)
 {
     m_ui.setupUi(this);
 
-    connect(m_ui.createProjectButton, SIGNAL(clicked()), this, SLOT(CreateProjectButtonClicked()));
+    connect(m_ui.createProjectButton, SIGNAL(clicked()), this, SLOT(createProjectButtonClicked()));
+    
+    scanForProjects();
 }
 
-void WidgetSelectProject::CreateProjectButtonClicked()
+void WidgetSelectProject::createProjectButtonClicked()
 {
     L_INFO("Opening create project dialog...");
     DialogCreateProject dcp;
     dcp.exec();
+}
+
+void WidgetSelectProject::selectProjectClicked(QString dir)
+{
+    L_DEBUG("Opening project at \"" + dir + "\"");
+}
+
+void WidgetSelectProject::scanForProjects()
+{
+    L_DEBUG("Scanning for projects...");
+    QDir projectsdir("./" + RuntimeConfig::Instance()->GetProjectsDirectory());
+    QString projDirPath = projectsdir.absolutePath();
+    QDirIterator iter(projDirPath, QDir::Dirs | QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
+    while(iter.hasNext())
+    {
+        iter.next();
+        QString projectFileName = iter.filePath() + "/" + RuntimeConfig::Instance()->GetProjectConfigName();
+        L_DEBUG("Scanning \"" + iter.filePath() + "\" for projects...");
+        if(QFile::exists(projectFileName))
+        {
+            L_DEBUG("Found project at \"" + iter.filePath() + "\"");
+            ProjectConfig config;
+            config.Load(projectFileName);
+            
+            QPushButton *button = new QPushButton;
+            button->setText(config.GetProjectName());
+            QString path = iter.filePath();
+            connect(button, &QPushButton::clicked, [=](){
+                selectProjectClicked(path);
+            });
+            
+            m_ui.buttonsList->layout()->addWidget(button);
+        }
+    }
+    L_DEBUG("Done scanning for projects!");
 }
