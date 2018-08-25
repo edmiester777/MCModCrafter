@@ -111,6 +111,7 @@ set(MCMODCRAFTER_HEADERS
     src/ui/DialogCreateProject.h
     src/ui/WidgetProjectSetup.h
     src/ui/WidgetPluginStatus.h
+    src/ui/nodes/MasterNodeModel.h
 
     # Plugin modules
     src/pyplugin/AcquireGIL.h
@@ -135,6 +136,7 @@ set(MCMODCRAFTER_SOURCES
     src/ui/DialogCreateProject.cpp
     src/ui/WidgetProjectSetup.cpp
     src/ui/WidgetPluginStatus.cpp
+    src/ui/nodes/MasterNodeModel.cpp
 
     # Plugin modules
     src/pyplugin/MCModInternalModule.cpp
