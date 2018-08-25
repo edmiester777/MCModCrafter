@@ -93,6 +93,11 @@ message(STATUS "PYTHON_INCLUDE_DIRS = ${PYTHON_INCLUDE_DIRS}")
 message(STATUS "Boost_LIBRARIES = ${Boost_LIBRARIES}")
 message(STATUS "BOOST_LIBRARYDIR = ${BOOST_LIBRARYDIR}")
 
+# Third party includes...
+set(BUILD_EXAMPLES OFF CACHE BOOL "Disable building the examples for node editor library.")
+set(BUILD_TESTING OFF CACHE BOOL "Disabling test building for node editor library.")
+add_subdirectory(third_party/nodeeditor)
+
 # Source definitions
 set(MCMODCRAFTER_HEADERS
     src/stdafx.h
@@ -171,12 +176,14 @@ target_link_libraries(frontend
     Qt5::Network
     ${Boost_LIBRARIES}
     ${PYTHON_LIBRARIES}
+    nodes
 )
 
 message(STATUS "${Boost_LIBRARIES}")
 
 include_directories(
     third_party/SimpleQtLogger
+    third_party/nodeeditor/include
     ${Boost_INCLUDE_DIRS}
     ${PYTHON_INCLUDE_DIRS}
 )

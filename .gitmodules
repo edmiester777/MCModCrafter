@@ -1,3 +1,6 @@
 [submodule "third_party/SimpleQtLogger"]
 	path = third_party/SimpleQtLogger
 	url = https://github.com/Mokolea/SimpleQtLogger.git
+[submodule "third_party/nodeeditor"]
+	path = third_party/nodeeditor
+	url = https://github.com/edmiester777/nodeeditor.git
