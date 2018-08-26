@@ -240,6 +240,8 @@ set(MCMODCRAFTER_SCRIPTS
     mcmodplugin/create_project/setup_decomp_workspace.py
     mcmodplugin/helper/__init__.py
     mcmodplugin/helper/gradle_helper.py
+    mcmodplugin/init/__init__.py
+    mcmodplugin/init/parse_java_source.py
 )
 foreach(SCRIPT ${MCMODCRAFTER_SCRIPTS})
     message(STATUS "Configuring ${SCRIPT}...")

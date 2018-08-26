@@ -5,9 +5,16 @@
     "ForgeDirectory": "forge",
     "ProjectConfigName": "project.modproj",
     "MinecraftForgeUrl": "https://files.minecraftforge.net/maven/net/minecraftforge/forge/1.12.2-14.23.4.2705/forge-1.12.2-14.23.4.2705-mdk.zip",
+    "ParseDirectory": "cache/parse",
     "AvailableHooks": [
         // NOTE: All plugins will have access to a kwarg named "runtimeconfig" that contains this
         // document.
+        // All plugins will have access to a flag named "debug"
+        // --------------------------------------------------------------------------------------------------
+
+        // This is executed when initializing the engine. This will be useful if you need to
+        // initialize states for your plugins, or validate any persistent data.
+        "mcmod.init",
 
         // This is executed when a project is flagged to set up.
         //

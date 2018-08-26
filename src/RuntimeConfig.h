@@ -36,6 +36,7 @@ private:
     CONFIG_STRING_PROPERTY(ForgeDirectory);
     CONFIG_STRING_PROPERTY(ProjectConfigName);
     CONFIG_STRING_PROPERTY(MinecraftForgeUrl);
+    CONFIG_STRING_PROPERTY(ParseDirectory);
     CONFIG_STRING_ARRAY_PROPERTY(AvailableHooks);
 };
 

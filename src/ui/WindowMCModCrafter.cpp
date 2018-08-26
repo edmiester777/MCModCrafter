@@ -52,6 +52,9 @@ MCModCrafter::MCModCrafter(QWidget *parent)
         this,
         SLOT(PluginExecutionFinished(bool))
     );
+
+    // executing the init script...
+    PluginManager::Instance()->exec(PluginManager::Instance()->executePluginsForHook("mcmod.init"));
 }
 
 void MCModCrafter::SetContent(QWidget* content)
