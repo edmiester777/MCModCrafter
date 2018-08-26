@@ -21,6 +21,23 @@
 #include "PyLogger.h"
 #include "PyPlugin.h"
 #include "PluginManager.h"
+#include "SyntaxNodeType.h"
+
+/**
+ * This solution was borrowed from https://stackoverflow.com/a/28131459
+ */
+#define __STR(str) #str
+#define MAKE_SUBMODULE(mod, submod) object submod##_module(handle<>(borrowed(PyImport_AddModule(__STR(mod.submod)))));\
+scope().attr(__STR(submod)) = submod##_module;\
+scope submod##_scope = submod##_module;
+
+void initLanguageSubmodule()
+{
+    using namespace pyplugin;
+    MAKE_SUBMODULE(mcmod, syntax);
+    syntax_module.attr("NodeType") =
+    class_<SyntaxNodeType, boost::noncopyable>("NodeType", init<string, string>());
+}
 
 BOOST_PYTHON_MODULE(mcmod)
 {
@@ -47,4 +64,9 @@ BOOST_PYTHON_MODULE(mcmod)
     .def("exec_hook", bp::pure_virtual(&PyPluginWrapper::execHook));
     
     bp::def("register_plugin", &PluginManager::RegisterPlugin);
+    
+    initLanguageSubmodule();
 }
+
+#undef __STR
+#undef MAKE_SUBMODULE

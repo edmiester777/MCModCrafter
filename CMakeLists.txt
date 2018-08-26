@@ -119,6 +119,7 @@ set(MCMODCRAFTER_HEADERS
     src/pyplugin/PyThread.h
     src/pyplugin/PyPlugin.h
     src/pyplugin/PyLogger.h
+    src/pyplugin/SyntaxNodeType.h
 
     # third party
     third_party/SimpleQtLogger/simpleQtLogger.h
@@ -145,6 +146,7 @@ set(MCMODCRAFTER_SOURCES
     src/pyplugin/PyThread.cpp
     src/pyplugin/PyPlugin.cpp
     src/pyplugin/PyLogger.cpp
+    src/pyplugin/SyntaxNodeType.cpp
 
     # third party
     third_party/SimpleQtLogger/simpleQtLogger.cpp
